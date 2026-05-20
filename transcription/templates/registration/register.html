@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Create Account — DocAI
+    </title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        *, *::before, *::after{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+        }
+
+        :root{
+
+            --navy:#0d1b2a;
+            --navy-mid:#152236;
+
+            --teal:#0ea5a0;
+            --teal-dim:#0a7a76;
+
+            --teal-glow:rgba(14,165,160,0.12);
+
+            --slate:#8fa3b8;
+
+            --white:#f0f4f8;
+
+            --surface:#172840;
+
+            --danger:#e05b5b;
+
+        }
+
+        html, body{
+
+            height:100%;
+
+            background:var(--navy);
+
+            color:var(--white);
+
+            font-family:'DM Sans', sans-serif;
+
+            display:flex;
+
+            align-items:center;
+
+            justify-content:center;
+
+        }
+
+        .register-wrap{
+
+            width:100%;
+
+            max-width:420px;
+
+            padding:24px;
+
+            animation:fadeUp 0.4s ease both;
+
+        }
+
+        @keyframes fadeUp{
+
+            from{
+                opacity:0;
+                transform:translateY(14px);
+            }
+
+            to{
+                opacity:1;
+                transform:translateY(0);
+            }
+
+        }
+
+        .brand{
+
+            display:flex;
+
+            align-items:center;
+
+            gap:10px;
+
+            justify-content:center;
+
+            margin-bottom:36px;
+
+        }
+
+        .brand-icon{
+
+            width:40px;
+
+            height:40px;
+
+            background:var(--teal);
+
+            border-radius:10px;
+
+            display:flex;
+
+            align-items:center;
+
+            justify-content:center;
+
+        }
+
+        .brand-icon svg{
+
+            width:22px;
+
+            height:22px;
+
+            fill:white;
+
+        }
+
+        .brand-name{
+
+            font-family:'Playfair Display', serif;
+
+            font-size:22px;
+
+            color:var(--white);
+
+        }
+
+        .brand-name span{
+
+            color:var(--teal);
+
+        }
+
+        .register-card{
+
+            background:var(--surface);
+
+            border:1px solid rgba(255,255,255,0.08);
+
+            border-radius:16px;
+
+            padding:32px;
+
+        }
+
+        .register-title{
+
+            font-size:20px;
+
+            font-weight:600;
+
+            margin-bottom:4px;
+
+        }
+
+        .register-subtitle{
+
+            font-size:13px;
+
+            color:var(--slate);
+
+            margin-bottom:28px;
+
+        }
+
+        .form-group{
+
+            margin-bottom:16px;
+
+        }
+
+        .form-label{
+
+            display:block;
+
+            font-size:12px;
+
+            font-weight:500;
+
+            color:var(--slate);
+
+            margin-bottom:6px;
+
+        }
+
+        .form-control{
+
+            width:100%;
+
+            background:var(--navy);
+
+            border:1px solid rgba(255,255,255,0.1);
+
+            border-radius:8px;
+
+            padding:12px 14px;
+
+            color:var(--white);
+
+            font-size:14px;
+
+            outline:none;
+
+            transition:border-color 0.15s;
+
+        }
+
+        .form-control:focus{
+
+            border-color:var(--teal);
+
+        }
+
+        .form-control::placeholder{
+
+            color:rgba(143,163,184,0.5);
+
+        }
+
+        .btn-register{
+
+            width:100%;
+
+            padding:12px;
+
+            background:var(--teal);
+
+            color:white;
+
+            border:none;
+
+            border-radius:8px;
+
+            font-size:14px;
+
+            font-weight:600;
+
+            cursor:pointer;
+
+            margin-top:10px;
+
+            transition:background 0.15s;
+
+        }
+
+        .btn-register:hover{
+
+            background:var(--teal-dim);
+
+        }
+
+        .error-box{
+
+            background:rgba(224,91,91,0.1);
+
+            border:1px solid rgba(224,91,91,0.25);
+
+            border-radius:8px;
+
+            padding:11px 14px;
+
+            font-size:13px;
+
+            color:var(--danger);
+
+            margin-bottom:18px;
+
+        }
+
+        .footer-link{
+
+            text-align:center;
+
+            margin-top:20px;
+
+            font-size:13px;
+
+            color:var(--slate);
+
+        }
+
+        .footer-link a{
+
+            color:var(--teal);
+
+            text-decoration:none;
+
+            font-weight:600;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="register-wrap">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+
+            <svg viewBox="0 0 24 24">
+
+                <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3a1 1 0 110 2 1 1 0 010-2zm3 10H9v-1h6v1zm0-3H9v-1h6v1zm0-3h-4v-1h4v1z"/>
+
+            </svg>
+
+        </div>
+
+        <div class="brand-name">
+
+            Doc<span>AI</span>
+
+        </div>
+
+    </div>
+
+    <div class="register-card">
+
+        <div class="register-title">
+            Create Account
+        </div>
+
+        <div class="register-subtitle">
+            Create your secure clinical workspace
+        </div>
+
+        {% if form.errors %}
+
+        <div class="error-box">
+
+            Please correct the errors below.
+
+        </div>
+
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    placeholder="Choose username"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password1"
+                    class="form-control"
+                    placeholder="Create password"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password2"
+                    class="form-control"
+                    placeholder="Confirm password"
+                    required
+                >
+
+            </div>
+
+            <button type="submit"
+                    class="btn-register">
+
+                Create Account
+
+            </button>
+
+        </form>
+
+        <div class="footer-link">
+
+            Already have an account?
+
+            <a href="{% url 'login' %}">
+                Sign In
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}DocAI{% endblock %}
+    </title>
+
+    <style>
+
+        :root{
+
+            --bg:#0f172a;
+            --surface:#111827;
+            --navy:#1e293b;
+
+            --white:#ffffff;
+            --white-dim:#e5e7eb;
+
+            --slate:#94a3b8;
+            --slate-dim:#64748b;
+
+            --teal:#14b8a6;
+            --teal-glow:rgba(20,184,166,0.12);
+
+            --success:#22c55e;
+            --warn:#f59e0b;
+
+            --radius:14px;
+            --radius-lg:20px;
+
+            --font-body:Arial,sans-serif;
+            --font-mono:monospace;
+
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:var(--bg);
+            color:white;
+            font-family:var(--font-body);
+        }
+
+        .layout{
+            display:flex;
+            min-height:100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar{
+            width:260px;
+            background:#020617;
+            padding:28px 20px;
+            position:fixed;
+            top:0;
+            left:0;
+            height:100vh;
+            overflow-y:auto;
+        }
+
+        .logo{
+            font-size:28px;
+            font-weight:700;
+            margin-bottom:40px;
+            color:var(--teal);
+        }
+
+        .nav-links{
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+
+        .nav-links a{
+            text-decoration:none;
+            color:var(--white-dim);
+            padding:14px 16px;
+            border-radius:12px;
+            transition:0.2s;
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .nav-links a:hover{
+            background:var(--navy);
+        }
+
+        .nav-links a.active{
+            background:var(--teal-glow);
+            color:var(--teal);
+        }
+
+        /* MAIN */
+
+        .main{
+            margin-left:260px;
+            width:100%;
+            padding:30px;
+        }
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:30px;
+        }
+
+        .topbar-left h1{
+            font-size:28px;
+            margin-bottom:5px;
+        }
+
+        .topbar-left p{
+            color:var(--slate);
+            font-size:14px;
+        }
+
+        .btn{
+            border:none;
+            padding:12px 18px;
+            border-radius:12px;
+            cursor:pointer;
+            text-decoration:none;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            font-weight:600;
+        }
+
+        .btn-primary{
+            background:var(--teal);
+            color:white;
+        }
+
+        .btn-primary:hover{
+            opacity:0.9;
+        }
+
+        .btn svg{
+            width:18px;
+            height:18px;
+        }
+
+        .card{
+            background:var(--surface);
+            border-radius:20px;
+            padding:22px;
+            border:1px solid rgba(255,255,255,0.05);
+        }
+
+        .card-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:18px;
+        }
+
+        .card-title{
+            font-size:18px;
+            font-weight:600;
+        }
+
+        .badge{
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:12px;
+            font-weight:600;
+        }
+
+        .badge-success{
+            background:rgba(34,197,94,0.15);
+            color:var(--success);
+        }
+
+        .badge-warn{
+            background:rgba(245,158,11,0.15);
+            color:var(--warn);
+        }
+
+        .badge-slate{
+            background:rgba(148,163,184,0.12);
+            color:var(--slate);
+        }
+
+        .badge-teal{
+            background:rgba(20,184,166,0.12);
+            color:var(--teal);
+        }
+
+        .fade-up{
+            animation:fadeUp 0.4s ease;
+        }
+
+        @keyframes fadeUp{
+
+            from{
+                opacity:0;
+                transform:translateY(15px);
+            }
+
+            to{
+                opacity:1;
+                transform:translateY(0);
+            }
+
+        }
+
+        @media(max-width:900px){
+
+            .sidebar{
+                width:100%;
+                height:auto;
+                position:relative;
+            }
+
+            .main{
+                margin-left:0;
+            }
+
+            .layout{
+                flex-direction:column;
+            }
+
+        }
+
+        {% block extra_styles %}
+        {% endblock %}
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="logo">
+            DocAI
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/" class="{% block nav_dashboard %}{% endblock %}">
+                🏠 Dashboard
+            </a>
+
+            <a href="{% url 'upload_audio' %}">
+                🎤 Upload Audio
+            </a>
+
+            <a href="/admin/">
+                ⚙ Admin
+            </a>
+
+            <a href="{% url 'logout' %}">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <div class="topbar">
+
+            <div class="topbar-left">
+
+                <h1>
+                    {% block topbar_title %}
+                    Dashboard
+                    {% endblock %}
+                </h1>
+
+                <p>
+                    {% block topbar_subtitle %}
+                    Welcome
+                    {% endblock %}
+                </p>
+
+            </div>
+
+            <div>
+
+                {% block topbar_actions %}
+                {% endblock %}
+
+            </div>
+
+        </div>
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+</div>
+
+{% block extra_scripts %}
+{% endblock %}
+
+</body>
+</html>

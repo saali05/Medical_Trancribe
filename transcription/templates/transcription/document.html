@@ -1,0 +1,445 @@
+{% extends "transcription/base.html" %}
+
+{% block title %}Clinical Document — DocAI{% endblock %}
+{% block nav_records %}active{% endblock %}
+{% block topbar_title %}Clinical document{% endblock %}
+{% block topbar_subtitle %}
+  {% if doc.transcript.audio.uploaded_at %}
+    {{ doc.transcript.audio.uploaded_at|date:"F j, Y" }}
+  {% endif %}
+{% endblock %}
+
+{% block topbar_actions %}
+  {% if doc.is_approved %}
+    <span class="badge badge-success" style="padding:6px 12px;font-size:12px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Approved
+    </span>
+  {% else %}
+    <span class="badge badge-warn" style="padding:6px 12px;font-size:12px;">Pending review</span>
+  {% endif %}
+  <a href="{% url 'dashboard' %}" class="btn btn-ghost">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </a>
+{% endblock %}
+
+{% block extra_styles %}
+.action-btn{
+
+  width:100%;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:10px;
+
+  padding:14px 16px;
+
+  border-radius:16px;
+
+  text-decoration:none;
+
+  font-weight:600;
+
+  font-size:14px;
+
+  color:#8b5cf6;
+
+  border:1px solid rgba(255,255,255,0.55);
+
+  background:transparent;
+
+  transition:all 0.25s ease;
+
+  margin-top:6px;
+
+}
+
+.action-btn:hover{
+
+  background:#8b5cf6;
+
+  color:white;
+
+  border-color:#8b5cf6;
+
+  transform:translateY(-2px);
+
+  box-shadow:0 0 20px rgba(139,92,246,0.35);
+
+}
+
+.action-btn span{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  font-size:15px;
+
+}
+.doc-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.section-icon {
+  width: 30px; height: 30px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.section-icon svg { width: 15px; height: 15px; }
+.si-teal   { background: rgba(14,165,160,0.12);  color: var(--teal); }
+.si-blue   { background: rgba(59,130,246,0.12);  color: #60a5fa; }
+.si-amber  { background: rgba(224,160,37,0.12);  color: var(--warn); }
+.si-green  { background: rgba(46,184,124,0.12);  color: var(--success); }
+.si-coral  { background: rgba(224,91,91,0.12);   color: var(--danger); }
+.si-purple { background: rgba(139,92,246,0.12);  color: #a78bfa; }
+.section-label { font-size: 13px; font-weight: 600; color: var(--white); }
+.sections-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.section-full { grid-column: 1 / -1; }
+.clinical-section {
+  background: var(--navy);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: border-color 0.15s;
+}
+.clinical-section:focus-within { border-color: rgba(14,165,160,0.4); }
+.cs-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-dim);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cs-label-dot { width: 6px; height: 6px; border-radius: 50%; }
+.dot-teal   { background: var(--teal); }
+.dot-blue   { background: #60a5fa; }
+.dot-amber  { background: var(--warn); }
+.dot-green  { background: var(--success); }
+.dot-danger { background: var(--danger); }
+.dot-purple { background: #a78bfa; }
+.dot-white  { background: var(--slate); }
+.cs-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--white-dim);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.7;
+  resize: none;
+  outline: none;
+  min-height: 80px;
+}
+.cs-textarea:focus { color: var(--white); }
+.cs-textarea::placeholder { color: var(--slate-dim); font-style: italic; }
+.collapsible-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.collapsible-toggle {
+  background: none;
+  border: none;
+  color: var(--slate);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  transition: color 0.15s;
+}
+.collapsible-toggle:hover { color: var(--white); }
+.collapsible-toggle svg { width: 14px; height: 14px; transition: transform 0.2s; }
+.collapsible-toggle.open svg { transform: rotate(180deg); }
+.collapsible-body { display: none; margin-top: 14px; }
+.collapsible-body.open { display: block; }
+.raw-text-box {
+  background: var(--navy);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--slate);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.side-panel { display: flex; flex-direction: column; gap: 16px; }
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 12.5px;
+}
+.meta-row:last-child { border-bottom: none; }
+.meta-key { color: var(--slate); }
+.meta-val { color: var(--white); font-weight: 500; text-align: right; max-width: 160px; word-break: break-word; }
+.action-stack { display: flex; flex-direction: column; gap: 8px; }
+.action-stack .btn { width: 100%; justify-content: center; }
+.entity-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.entity-tag {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.et-default { background: rgba(255,255,255,0.05); color: var(--slate); border: 1px solid rgba(255,255,255,0.1); }
+.et-teal    { background: rgba(14,165,160,0.1);   color: var(--teal);  border: 1px solid rgba(14,165,160,0.2); }
+@media (max-width: 1100px) {
+  .doc-layout { grid-template-columns: 1fr; }
+  .sections-grid { grid-template-columns: 1fr; }
+}
+{% endblock %}
+
+{% block content %}
+<form method="post" id="doc-form">
+{% csrf_token %}
+
+<div class="doc-layout fade-up">
+
+  <!-- Main Document -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <!-- Patient Info -->
+    <div class="card">
+      <div class="section-head">
+        <div class="section-icon si-teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="section-label">Patient information</div>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Patient name</label>
+        <input type="text" name="patient_name" class="form-control"
+               value="{{ doc.patient_name }}" placeholder="Enter patient name...">
+      </div>
+    </div>
+
+    <!-- Clinical Notes -->
+    <div class="card">
+      <div class="section-head">
+        <div class="section-icon si-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="section-label">Clinical notes</div>
+        <span style="margin-left:auto;font-size:11px;color:var(--slate);">All fields are editable</span>
+      </div>
+
+      <div class="sections-grid">
+
+        <div class="clinical-section">
+          <div class="cs-label"><span class="cs-label-dot dot-teal"></span>Chief complaint</div>
+          <textarea name="chief_complaint" class="cs-textarea" rows="4"
+            placeholder="Main reason for visit...">{{ doc.chief_complaint }}</textarea>
+        </div>
+
+        <div class="clinical-section">
+          <div class="cs-label"><span class="cs-label-dot dot-blue"></span>History of present illness</div>
+          <textarea name="history" class="cs-textarea" rows="4"
+            placeholder="Patient history...">{{ doc.history }}</textarea>
+        </div>
+
+        <div class="clinical-section section-full">
+          <div class="cs-label"><span class="cs-label-dot dot-white"></span>Physical examination</div>
+          <textarea name="examination" class="cs-textarea" rows="5"
+            placeholder="Examination findings...">{{ doc.examination }}</textarea>
+        </div>
+
+        <div class="clinical-section">
+          <div class="cs-label"><span class="cs-label-dot dot-danger"></span>Diagnosis</div>
+          <textarea name="diagnosis" class="cs-textarea" rows="4"
+            placeholder="Diagnosis...">{{ doc.diagnosis }}</textarea>
+        </div>
+
+        <div class="clinical-section">
+          <div class="cs-label"><span class="cs-label-dot dot-amber"></span>Prescription</div>
+          <textarea name="prescription" class="cs-textarea" rows="4"
+            placeholder="Medications prescribed...">{{ doc.prescription }}</textarea>
+        </div>
+
+        <div class="clinical-section">
+          <div class="cs-label"><span class="cs-label-dot dot-green"></span>Treatment plan</div>
+          <textarea name="treatment_plan" class="cs-textarea" rows="4"
+            placeholder="Treatment and management...">{{ doc.treatment_plan }}</textarea>
+        </div>
+
+        <div class="clinical-section">
+          <div class="cs-label"><span class="cs-label-dot dot-purple"></span>Follow-up instructions</div>
+          <textarea name="follow_up" class="cs-textarea" rows="4"
+            placeholder="Next steps and follow-up...">{{ doc.follow_up }}</textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Raw Transcript -->
+    <div class="card">
+      <div class="collapsible-head" onclick="toggleCollapsible()">
+        <div class="section-head" style="margin-bottom:0;border-bottom:none;padding-bottom:0;">
+          <div class="section-icon si-coral">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/></svg>
+          </div>
+          <div class="section-label">Raw Whisper transcript</div>
+        </div>
+        <button type="button" class="collapsible-toggle" id="coll-toggle">
+          Show raw text
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <div class="collapsible-body" id="coll-body">
+        <div class="raw-text-box">{{ doc.transcript.raw_text|default:"No raw transcript available." }}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Side Panel -->
+  <div class="side-panel">
+
+    <!-- Actions -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px;">Document actions</div>
+      <div class="action-stack">
+        <button type="submit" name="action" value="save" class="btn btn-ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save changes
+        </button>
+
+        {% if not doc.is_approved %}
+        <button type="submit" name="approve" value="1" class="btn btn-success"
+                onclick="return confirm('Approve this document? It will be marked as finalised.')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Approve & finalise
+        </button>
+        {% else %}
+        <span class="btn btn-success" style="cursor:default;opacity:0.7;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Approved
+        </span>
+        {% endif %}
+        
+        <a href="{% url 'export_pdf' doc.pk %}"
+
+   class="action-btn">
+
+    <span>📄</span>
+
+    Export PDF
+
+</a>
+
+    <a href="{% url 'download_docx' doc.pk %}"
+
+    class="action-btn">
+
+    <span>📝</span>
+
+    Export DOCX
+
+    </a>
+      </div>
+    </div>
+
+    <!-- Metadata -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px;">Document metadata</div>
+      <div>
+        <div class="meta-row">
+          <span class="meta-key">Created</span>
+          <span class="meta-val">{{ doc.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Last updated</span>
+          <span class="meta-val">{{ doc.updated_at|timesince }} ago</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Doctor</span>
+          <span class="meta-val">{{ doc.transcript.audio.doctor.get_full_name|default:doc.transcript.audio.doctor.username }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Audio file</span>
+          <span class="meta-val">{{ doc.transcript.audio.audio_file.name|truncatechars:22 }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Status</span>
+          <span class="meta-val">
+            {% if doc.is_approved %}
+              <span class="badge badge-success">Approved</span>
+            {% else %}
+              <span class="badge badge-warn">Draft</span>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entities -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:6px;">Detected entities</div>
+      <div style="font-size:12px;color:var(--slate);margin-bottom:10px;">Extracted by spaCy NLP</div>
+      <div class="entity-list">
+        <span class="entity-tag et-default">Entities appear after NLP processing</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function toggleCollapsible() {
+  var body = document.getElementById('coll-body');
+  var btn  = document.getElementById('coll-toggle');
+  var open = body.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  btn.childNodes[0].textContent = open ? ' Hide raw text' : ' Show raw text';
+}
+
+document.querySelectorAll('.cs-textarea').forEach(function(ta) {
+  function resize() {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }
+  ta.addEventListener('input', resize);
+  resize();
+});
+</script>
+{% endblock %}

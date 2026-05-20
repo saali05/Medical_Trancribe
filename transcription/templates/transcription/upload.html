@@ -1,0 +1,330 @@
+{% extends "transcription/base.html" %}
+
+{% block title %}
+Upload Audio
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.upload-container{
+    max-width:800px;
+    margin:auto;
+}
+
+.upload-card{
+    background:var(--surface);
+    border-radius:24px;
+    padding:40px;
+}
+
+.upload-title{
+    font-size:30px;
+    margin-bottom:10px;
+}
+
+.upload-sub{
+    color:var(--slate);
+    margin-bottom:30px;
+}
+
+.input-group{
+    margin-bottom:22px;
+}
+
+.input-group label{
+    display:block;
+    margin-bottom:10px;
+    font-weight:600;
+}
+
+.input-group input{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:var(--navy);
+    color:white;
+}
+
+.section-title{
+    margin:30px 0 16px;
+    font-size:20px;
+}
+
+.record-box{
+    background:#0f172a;
+    border-radius:18px;
+    padding:24px;
+    margin-bottom:25px;
+}
+
+.record-buttons{
+    display:flex;
+    gap:14px;
+    margin-bottom:20px;
+}
+
+.record-btn{
+    flex:1;
+    border:none;
+    padding:16px;
+    border-radius:14px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
+}
+
+.start-btn{
+    background:#14b8a6;
+    color:white;
+}
+
+.stop-btn{
+    background:#ef4444;
+    color:white;
+}
+
+.upload-btn{
+    width:100%;
+    border:none;
+    padding:18px;
+    border-radius:16px;
+    background:#3b82f6;
+    color:white;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.upload-btn:hover{
+    opacity:0.9;
+}
+
+audio{
+    width:100%;
+    margin-top:14px;
+}
+
+.status{
+    margin-bottom:18px;
+    color:var(--slate);
+}
+
+.recording{
+    color:#ef4444;
+    font-weight:700;
+}
+
+.divider{
+    text-align:center;
+    margin:35px 0;
+    color:var(--slate);
+    position:relative;
+}
+
+.divider::before{
+    content:'';
+    position:absolute;
+    left:0;
+    top:50%;
+    width:40%;
+    height:1px;
+    background:rgba(255,255,255,0.1);
+}
+
+.divider::after{
+    content:'';
+    position:absolute;
+    right:0;
+    top:50%;
+    width:40%;
+    height:1px;
+    background:rgba(255,255,255,0.1);
+}
+
+.alert-error{
+    background:#ef4444;
+    color:white;
+    padding:14px;
+    border-radius:12px;
+    margin-bottom:16px;
+}
+
+.alert-warning{
+    background:#f59e0b;
+    color:white;
+    padding:14px;
+    border-radius:12px;
+    margin-bottom:16px;
+}
+
+</style>
+
+<div class="upload-container">
+
+    <div class="upload-card">
+
+        <div class="upload-title">
+            🎤 Medical Audio Upload
+        </div>
+
+        <div class="upload-sub">
+            Upload or record doctor-patient conversations
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <!-- ERROR MESSAGES -->
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="alert-error">
+                        ⚠️ {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if form.errors %}
+                <div class="alert-warning">
+                    <strong>Form Error:</strong> {{ form.errors }}
+                </div>
+            {% endif %}
+            <!-- END ERROR MESSAGES -->
+
+            <!-- PATIENT NAME -->
+            <div class="input-group">
+                <label>Patient Name</label>
+                <input
+                    type="text"
+                    name="patient_name"
+                    placeholder="Enter patient name"
+                    required
+                >
+            </div>
+
+            <!-- FILE UPLOAD -->
+            <div class="section-title">
+                📁 Upload Existing Audio
+            </div>
+
+            <div class="input-group">
+                <label>Select Audio File</label>
+                <input
+                    type="file"
+                    name="audio_file"
+                    accept="audio/*"
+                >
+            </div>
+
+            <div class="divider">OR</div>
+
+            <!-- LIVE RECORDING -->
+            <div class="section-title">
+                🎙 Live Microphone Recording
+            </div>
+
+            <div class="record-box">
+
+                <div class="status" id="status">
+                    Ready to record
+                </div>
+
+                <div class="record-buttons">
+                    <button
+                        type="button"
+                        class="record-btn start-btn"
+                        id="startBtn"
+                    >
+                        ▶ Start Recording
+                    </button>
+
+                    <button
+                        type="button"
+                        class="record-btn stop-btn"
+                        id="stopBtn"
+                        disabled
+                    >
+                        ■ Stop Recording
+                    </button>
+                </div>
+
+                <audio id="audioPlayback" controls></audio>
+
+            </div>
+
+            <!-- HIDDEN AUDIO -->
+            <input
+                type="hidden"
+                name="recorded_audio"
+                id="recordedAudio"
+            >
+
+            <!-- SUBMIT -->
+            <button type="submit" class="upload-btn">
+                Upload &amp; Transcribe
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+let mediaRecorder;
+let audioChunks = [];
+let audioBlob;
+
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const statusText = document.getElementById("status");
+const audioPlayback = document.getElementById("audioPlayback");
+
+startBtn.addEventListener("click", async () => {
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start();
+    audioChunks = [];
+
+    statusText.innerHTML = "🔴 Recording...";
+    statusText.classList.add("recording");
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+
+    mediaRecorder.addEventListener("dataavailable", event => {
+        audioChunks.push(event.data);
+    });
+
+    mediaRecorder.addEventListener("stop", () => {
+
+        audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const audioURL = URL.createObjectURL(audioBlob);
+        audioPlayback.src = audioURL;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = () => {
+            document.getElementById("recordedAudio").value = reader.result;
+        };
+
+    });
+
+});
+
+stopBtn.addEventListener("click", () => {
+    mediaRecorder.stop();
+    statusText.innerHTML = "Recording completed";
+    statusText.classList.remove("recording");
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+});
+
+</script>
+
+{% endblock %}

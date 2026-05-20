@@ -1,0 +1,215 @@
+{% extends "transcription/base.html" %}
+
+{% block title %}Transcription #{{ transcription.id }}{% endblock %}
+
+{% block content %}
+
+<style>
+.detail-container { max-width: 900px; margin: auto; }
+.section-card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
+.section-heading {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #14b8a6;
+}
+.medical-table { width: 100%; border-collapse: collapse; }
+.medical-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: #0f172a;
+    color: #94a3b8;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 30%;
+    border-radius: 8px;
+}
+.medical-table td {
+    padding: 12px 16px;
+    color: white;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.medical-table tr:last-child td { border-bottom: none; }
+.not-mentioned { color: #475569; font-style: italic; }
+.conversation-item {
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+}
+.doctor-msg {
+    background: rgba(59, 130, 246, 0.15);
+    border-left: 4px solid #3b82f6;
+}
+.patient-msg {
+    background: rgba(20, 184, 166, 0.15);
+    border-left: 4px solid #14b8a6;
+}
+.speaker-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+.doctor-label { color: #3b82f6; }
+.patient-label { color: #14b8a6; }
+.timestamp {
+    font-size: 11px;
+    color: #475569;
+    margin-left: 8px;
+}
+.msg-text { color: #e2e8f0; line-height: 1.6; }
+.back-btn {
+    display: inline-block;
+    margin-bottom: 24px;
+    padding: 10px 20px;
+    background: #1e293b;
+    border-radius: 10px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 14px;
+}
+.back-btn:hover { background: #334155; color: white; }
+.patient-name {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.meta-info { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+</style>
+
+<div class="detail-container">
+
+    <a href="{% url 'transcription_list' %}" class="back-btn">← Back to List</a>
+
+    <div class="patient-name">
+        {{ transcription.patient_name|default:"Unknown Patient" }}
+    </div>
+    <div class="meta-info">
+        Transcription #{{ transcription.id }} &nbsp;·&nbsp;
+        {{ transcription.created_at|date:"d M Y, H:i" }}
+    </div>
+
+    <!-- MEDICAL SUMMARY -->
+    <div class="section-card">
+        <div class="section-heading">🩺 Medical Summary</div>
+        <table class="medical-table">
+            <tr>
+                <th>Chief Complaint</th>
+                <td>
+                    {% if transcription.chief_complaint and transcription.chief_complaint != "Not mentioned" %}
+                        {{ transcription.chief_complaint }}
+                    {% else %}
+                        <span class="not-mentioned">Not mentioned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Present Illness</th>
+                <td>
+                    {% if transcription.present_illness and transcription.present_illness != "Not mentioned" %}
+                        {{ transcription.present_illness }}
+                    {% else %}
+                        <span class="not-mentioned">Not mentioned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Diagnosis</th>
+                <td>
+                    {% if transcription.diagnosis and transcription.diagnosis != "Not mentioned" %}
+                        {{ transcription.diagnosis }}
+                    {% else %}
+                        <span class="not-mentioned">Not mentioned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Prescription</th>
+                <td>
+                    {% if transcription.prescription and transcription.prescription != "Not mentioned" %}
+                        {{ transcription.prescription }}
+                    {% else %}
+                        <span class="not-mentioned">Not mentioned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Treatment Plan</th>
+                <td>
+                    {% if transcription.treatment_plan and transcription.treatment_plan != "Not mentioned" %}
+                        {{ transcription.treatment_plan }}
+                    {% else %}
+                        <span class="not-mentioned">Not mentioned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Follow Up</th>
+                <td>
+                    {% if transcription.follow_up and transcription.follow_up != "Not mentioned" %}
+                        {{ transcription.follow_up }}
+                    {% else %}
+                        <span class="not-mentioned">Not mentioned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Vitals</th>
+                <td>
+                    {% if transcription.vitals and transcription.vitals != "Not mentioned" %}
+                        {{ transcription.vitals }}
+                    {% else %}
+                        <span class="not-mentioned">Not mentioned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Past Medical History</th>
+                <td>
+                    {% if transcription.past_medical_history and transcription.past_medical_history != "Not mentioned" %}
+                        {{ transcription.past_medical_history }}
+                    {% else %}
+                        <span class="not-mentioned">Not mentioned</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <a href="{% url 'transcription_list' %}" class="back-btn">← Back to List</a>
+
+<!-- ADD THIS -->
+<a href="{% url 'export_pdf' transcription.id %}" 
+   style="display:inline-block;margin-bottom:24px;margin-left:12px;padding:10px 22px;
+          background:#1e40af;border-radius:10px;color:white;text-decoration:none;
+          font-size:14px;font-weight:600;">
+    📄 Export PDF
+</a>
+
+    <!-- CONVERSATION -->
+    <div class="section-card">
+        <div class="section-heading">💬 Conversation</div>
+        {% for seg in transcription.conversation_json %}
+        <div class="conversation-item {% if seg.role == 'Doctor' %}doctor-msg{% else %}patient-msg{% endif %}">
+            <div class="speaker-label {% if seg.role == 'Doctor' %}doctor-label{% else %}patient-label{% endif %}">
+                {% if seg.role == 'Doctor' %}🩺{% else %}🧑{% endif %}
+                {{ seg.role }}
+                <span class="timestamp">{{ seg.start }}s – {{ seg.end }}s</span>
+            </div>
+            <div class="msg-text">{{ seg.text }}</div>
+        </div>
+        {% empty %}
+            <p style="color:#475569;">No conversation data available.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

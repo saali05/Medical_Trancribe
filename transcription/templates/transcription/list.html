@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>All Transcriptions</h2>
+<a href="{% url 'upload_audio' %}" class="btn btn-primary mb-3">+ New</a>
+<table class="table table-striped">
+  <thead><tr><th>#</th><th>Date</th><th>Diagnosis</th><th></th></tr></thead>
+  <tbody>
+  {% for t in transcriptions %}
+  <tr>
+    <td>{{ t.id }}</td>
+    <td>{{ t.created_at|date:"d M Y H:i" }}</td>
+    <td>{{ t.diagnosis|default:"—" }}</td>
+    <td><a href="{% url 'transcription_detail' t.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

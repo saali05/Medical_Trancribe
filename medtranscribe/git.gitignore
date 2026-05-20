@@ -1,0 +1,29 @@
+# Python
+
+__pycache__/
+*.pyc
+
+# Virtual Environment
+
+venv/
+env/
+
+# Database
+
+db.sqlite3
+
+# Media Files
+
+media/
+
+# VS Code
+
+.vscode/
+
+# Environment
+
+.env
+
+# Migrations cache
+
+*.pyo
