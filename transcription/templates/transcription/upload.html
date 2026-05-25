@@ -1,330 +1,1419 @@
 {% extends "transcription/base.html" %}
 
 {% block title %}
-Upload Audio
+Upload Audio — DocAI
 {% endblock %}
 
-{% block content %}
+{% block topbar_title %}
+AI Medical Transcription
+{% endblock %}
+
+{% block topbar_subtitle %}
+Upload or record doctor–patient conversations for AI-powered clinical documentation
+{% endblock %}
+
+{% block extra_styles %}
 
 <style>
 
-.upload-container{
-    max-width:800px;
-    margin:auto;
+.upload-page{
+
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+
 }
 
-.upload-card{
-    background:var(--surface);
-    border-radius:24px;
-    padding:40px;
-}
+.hero-section{
 
-.upload-title{
-    font-size:30px;
-    margin-bottom:10px;
-}
+    position:relative;
 
-.upload-sub{
-    color:var(--slate);
-    margin-bottom:30px;
-}
+    overflow:hidden;
 
-.input-group{
-    margin-bottom:22px;
-}
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+    );
 
-.input-group label{
-    display:block;
-    margin-bottom:10px;
-    font-weight:600;
-}
+    border-radius:36px;
 
-.input-group input{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:14px;
-    background:var(--navy);
+    padding:46px;
+
     color:white;
+
+    box-shadow:
+        0 25px 60px rgba(37,99,235,0.22);
+
+}
+
+.hero-section::before{
+
+    content:'';
+
+    position:absolute;
+
+    width:340px;
+    height:340px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,0.10);
+
+    top:-140px;
+    right:-140px;
+
+}
+
+.hero-content{
+
+    position:relative;
+    z-index:2;
+
+    display:flex;
+    justify-content:space-between;
+    gap:30px;
+    flex-wrap:wrap;
+
+}
+
+.hero-title{
+
+    font-size:48px;
+
+    font-weight:800;
+
+    line-height:1.1;
+
+    margin-bottom:18px;
+
+    letter-spacing:-1px;
+
+}
+
+.hero-desc{
+
+    max-width:720px;
+
+    font-size:16px;
+
+    line-height:1.9;
+
+    opacity:0.92;
+
+}
+
+.hero-stats{
+
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+
+    margin-top:28px;
+
+}
+
+.hero-stat{
+
+    background:rgba(255,255,255,0.12);
+
+    border:1px solid rgba(255,255,255,0.18);
+
+    backdrop-filter:blur(14px);
+
+    border-radius:22px;
+
+    padding:16px 20px;
+
+}
+
+.hero-stat-value{
+
+    font-size:28px;
+
+    font-weight:800;
+
+}
+
+.hero-stat-label{
+
+    font-size:12px;
+
+    opacity:0.85;
+
+}
+
+.upload-layout{
+
+    display:grid;
+
+    grid-template-columns:1fr 340px;
+
+    gap:28px;
+
+    align-items:start;
+
+}
+
+.main-card{
+
+    background:rgba(255,255,255,0.84);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:34px;
+
+    padding:34px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid rgba(255,255,255,0.6);
+
 }
 
 .section-title{
-    margin:30px 0 16px;
-    font-size:20px;
+
+    font-size:24px;
+
+    font-weight:700;
+
+    color:var(--text);
+
+    margin-bottom:10px;
+
 }
 
-.record-box{
-    background:#0f172a;
-    border-radius:18px;
-    padding:24px;
-    margin-bottom:25px;
+.section-sub{
+
+    color:var(--muted);
+
+    font-size:14px;
+
+    line-height:1.8;
+
+    margin-bottom:28px;
+
 }
 
-.record-buttons{
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:20px;
+
+}
+
+.full-width{
+
+    grid-column:1 / -1;
+
+}
+
+.input-group{
+
     display:flex;
-    gap:14px;
-    margin-bottom:20px;
+    flex-direction:column;
+    gap:10px;
+
 }
 
-.record-btn{
-    flex:1;
+.input-label{
+
+    font-size:13px;
+
+    font-weight:700;
+
+    color:var(--text);
+
+}
+
+.form-control{
+
+    width:100%;
+
     border:none;
-    padding:16px;
-    border-radius:14px;
-    cursor:pointer;
+
+    outline:none;
+
+    background:#f8fafc;
+
+    border:1px solid #e2e8f0;
+
+    border-radius:20px;
+
+    padding:18px 18px;
+
     font-size:15px;
-    font-weight:600;
+
+    font-family:var(--font-body);
+
+    transition:0.25s ease;
+
+    color:var(--text);
+
 }
 
-.start-btn{
-    background:#14b8a6;
-    color:white;
+.form-control:focus{
+
+    border-color:#93c5fd;
+
+    box-shadow:
+        0 0 0 4px rgba(37,99,235,0.08);
+
+    background:white;
+
 }
 
-.stop-btn{
-    background:#ef4444;
-    color:white;
+.form-control::placeholder{
+
+    color:#94a3b8;
+
 }
 
-.upload-btn{
-    width:100%;
-    border:none;
-    padding:18px;
-    border-radius:16px;
-    background:#3b82f6;
-    color:white;
-    font-size:16px;
-    font-weight:700;
+.upload-zone{
+
+    position:relative;
+
+    background:#f8fafc;
+
+    border:2px dashed #bfdbfe;
+
+    border-radius:28px;
+
+    padding:48px 30px;
+
+    text-align:center;
+
+    transition:0.25s ease;
+
+    overflow:hidden;
+
+}
+
+.upload-zone:hover{
+
+    border-color:#60a5fa;
+
+    background:white;
+
+}
+
+.upload-zone input{
+
+    position:absolute;
+
+    inset:0;
+
+    opacity:0;
+
     cursor:pointer;
+
 }
 
-.upload-btn:hover{
-    opacity:0.9;
+.upload-icon{
+
+    width:84px;
+    height:84px;
+
+    margin:auto auto 20px;
+
+    border-radius:28px;
+
+    background:rgba(37,99,235,0.08);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:36px;
+
 }
 
-audio{
-    width:100%;
-    margin-top:14px;
-}
+.upload-title{
 
-.status{
-    margin-bottom:18px;
-    color:var(--slate);
-}
+    font-size:22px;
 
-.recording{
-    color:#ef4444;
     font-weight:700;
+
+    color:var(--text);
+
+    margin-bottom:10px;
+
+}
+
+.upload-desc{
+
+    color:var(--muted);
+
+    font-size:14px;
+
+    line-height:1.8;
+
 }
 
 .divider{
-    text-align:center;
-    margin:35px 0;
-    color:var(--slate);
-    position:relative;
+
+    display:flex;
+    align-items:center;
+    gap:16px;
+
+    margin:36px 0;
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    font-weight:700;
+
 }
 
-.divider::before{
-    content:'';
-    position:absolute;
-    left:0;
-    top:50%;
-    width:40%;
-    height:1px;
-    background:rgba(255,255,255,0.1);
-}
-
+.divider::before,
 .divider::after{
+
     content:'';
-    position:absolute;
-    right:0;
-    top:50%;
-    width:40%;
+
+    flex:1;
+
     height:1px;
-    background:rgba(255,255,255,0.1);
+
+    background:#e2e8f0;
+
+}
+
+.record-box{
+
+    background:linear-gradient(
+        135deg,
+        rgba(37,99,235,0.05),
+        rgba(6,182,212,0.05)
+    );
+
+    border:1px solid rgba(37,99,235,0.10);
+
+    border-radius:30px;
+
+    padding:30px;
+
+}
+
+.record-top{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:24px;
+
+    flex-wrap:wrap;
+
+    gap:16px;
+
+}
+
+.record-title{
+
+    font-size:20px;
+
+    font-weight:700;
+
+    color:var(--text);
+
+}
+
+.record-status{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    color:var(--muted);
+
+    font-size:14px;
+
+}
+
+.record-dot{
+
+    width:12px;
+    height:12px;
+
+    border-radius:50%;
+
+    background:#94a3b8;
+
+}
+
+.recording .record-dot{
+
+    background:#ef4444;
+
+    animation:pulse 1s infinite;
+
+}
+
+@keyframes pulse{
+
+    0%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+    50%{
+        transform:scale(1.3);
+        opacity:0.6;
+    }
+
+    100%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+
+.wave-box{
+
+    height:120px;
+
+    border-radius:24px;
+
+    background:white;
+
+    border:1px solid #e2e8f0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-bottom:24px;
+
+    overflow:hidden;
+
+}
+
+.wave-animation{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    height:50px;
+
+}
+
+.wave-bar{
+
+    width:8px;
+
+    background:#2563eb;
+
+    border-radius:999px;
+
+    animation:wave 1s infinite ease-in-out;
+
+}
+
+.wave-bar:nth-child(1){ height:16px; animation-delay:0s; }
+.wave-bar:nth-child(2){ height:32px; animation-delay:0.1s; }
+.wave-bar:nth-child(3){ height:22px; animation-delay:0.2s; }
+.wave-bar:nth-child(4){ height:42px; animation-delay:0.3s; }
+.wave-bar:nth-child(5){ height:18px; animation-delay:0.4s; }
+.wave-bar:nth-child(6){ height:34px; animation-delay:0.5s; }
+.wave-bar:nth-child(7){ height:24px; animation-delay:0.6s; }
+
+@keyframes wave{
+
+    0%,100%{
+        transform:scaleY(1);
+    }
+
+    50%{
+        transform:scaleY(1.6);
+    }
+
+}
+
+.record-buttons{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:16px;
+
+}
+
+.record-btn{
+
+    border:none;
+
+    border-radius:20px;
+
+    padding:18px;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:0.25s ease;
+
+}
+
+.start-btn{
+
+    background:linear-gradient(
+        135deg,
+        #10b981,
+        #06b6d4
+    );
+
+    color:white;
+
+}
+
+.stop-btn{
+
+    background:linear-gradient(
+        135deg,
+        #ef4444,
+        #f97316
+    );
+
+    color:white;
+
+}
+
+.record-btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.record-btn:disabled{
+
+    opacity:0.5;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
+
+audio{
+
+    width:100%;
+
+    margin-top:24px;
+
+}
+
+.submit-btn{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:24px;
+
+    padding:20px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+    );
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:0.25s ease;
+
+    margin-top:30px;
+
+    box-shadow:
+        0 18px 35px rgba(37,99,235,0.20);
+
+}
+
+.submit-btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.side-column{
+
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+
+}
+
+.side-card{
+
+    background:rgba(255,255,255,0.84);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:30px;
+
+    padding:28px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.side-title{
+
+    font-size:20px;
+
+    font-weight:700;
+
+    margin-bottom:18px;
+
+    color:var(--text);
+
+}
+
+.workflow{
+
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+
+}
+
+.workflow-step{
+
+    display:flex;
+    gap:14px;
+
+}
+
+.workflow-icon{
+
+    width:44px;
+    height:44px;
+
+    border-radius:16px;
+
+    background:rgba(37,99,235,0.08);
+
+    color:#2563eb;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:18px;
+
+    flex-shrink:0;
+
+}
+
+.workflow-title{
+
+    font-size:14px;
+
+    font-weight:700;
+
+    margin-bottom:4px;
+
+    color:var(--text);
+
+}
+
+.workflow-desc{
+
+    font-size:13px;
+
+    color:var(--muted);
+
+    line-height:1.7;
+
+}
+
+.alert-box{
+
+    padding:18px;
+
+    border-radius:20px;
+
+    margin-bottom:20px;
+
+    font-size:14px;
+
+    line-height:1.7;
+
 }
 
 .alert-error{
-    background:#ef4444;
-    color:white;
-    padding:14px;
-    border-radius:12px;
-    margin-bottom:16px;
+
+    background:rgba(239,68,68,0.08);
+
+    border:1px solid rgba(239,68,68,0.12);
+
+    color:#ef4444;
+
 }
 
 .alert-warning{
-    background:#f59e0b;
-    color:white;
-    padding:14px;
-    border-radius:12px;
-    margin-bottom:16px;
+
+    background:rgba(245,158,11,0.08);
+
+    border:1px solid rgba(245,158,11,0.12);
+
+    color:#d97706;
+
+}
+
+@media(max-width:1100px){
+
+    .upload-layout{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@media(max-width:800px){
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .hero-title{
+
+        font-size:38px;
+
+    }
+
+    .hero-section{
+
+        padding:32px;
+
+    }
+
 }
 
 </style>
 
-<div class="upload-container">
+{% endblock %}
 
-    <div class="upload-card">
+{% block content %}
 
-        <div class="upload-title">
-            🎤 Medical Audio Upload
-        </div>
+<div class="upload-page fade-up">
 
-        <div class="upload-sub">
-            Upload or record doctor-patient conversations
-        </div>
+    <!-- HERO -->
 
-        <form method="POST" enctype="multipart/form-data">
+    <div class="hero-section">
 
-            {% csrf_token %}
+        <div class="hero-content">
 
-            <!-- ERROR MESSAGES -->
-            {% if messages %}
-                {% for msg in messages %}
-                    <div class="alert-error">
-                        ⚠️ {{ msg }}
+            <div>
+
+                <div class="hero-title">
+
+                    AI Medical Audio Transcription
+
+                </div>
+
+                <div class="hero-desc">
+
+                    Upload or record doctor–patient conversations and
+                    instantly generate structured clinical summaries,
+                    prescriptions, diagnoses, and healthcare reports
+                    using AI-powered speech recognition and medical NLP.
+
+                </div>
+
+                <div class="hero-stats">
+
+                    <div class="hero-stat">
+
+                        <div class="hero-stat-value">
+
+                            98%
+
+                        </div>
+
+                        <div class="hero-stat-label">
+
+                            AI Accuracy
+
+                        </div>
+
                     </div>
-                {% endfor %}
-            {% endif %}
 
-            {% if form.errors %}
-                <div class="alert-warning">
-                    <strong>Form Error:</strong> {{ form.errors }}
+                    <div class="hero-stat">
+
+                        <div class="hero-stat-value">
+
+                            ~2m
+
+                        </div>
+
+                        <div class="hero-stat-label">
+
+                            Processing Time
+
+                        </div>
+
+                    </div>
+
+                    <div class="hero-stat">
+
+                        <div class="hero-stat-value">
+
+                            AI
+
+                        </div>
+
+                        <div class="hero-stat-label">
+
+                            Whisper Engine
+
+                        </div>
+
+                    </div>
+
                 </div>
-            {% endif %}
-            <!-- END ERROR MESSAGES -->
 
-            <!-- PATIENT NAME -->
-            <div class="input-group">
-                <label>Patient Name</label>
-                <input
-                    type="text"
-                    name="patient_name"
-                    placeholder="Enter patient name"
-                    required
-                >
             </div>
 
-            <!-- FILE UPLOAD -->
+        </div>
+
+    </div>
+
+    <div class="upload-layout">
+
+        <!-- MAIN -->
+
+        <div class="main-card">
+
             <div class="section-title">
-                📁 Upload Existing Audio
+
+                Upload Clinical Audio
+
             </div>
 
-            <div class="input-group">
-                <label>Select Audio File</label>
-                <input
-                    type="file"
-                    name="audio_file"
-                    accept="audio/*"
-                >
+            <div class="section-sub">
+
+                Record or upload healthcare conversations securely
+                for AI-powered medical transcription and clinical
+                documentation generation.
+
             </div>
 
-            <div class="divider">OR</div>
+            <form method="POST" enctype="multipart/form-data">
 
-            <!-- LIVE RECORDING -->
-            <div class="section-title">
-                🎙 Live Microphone Recording
-            </div>
+                {% csrf_token %}
 
-            <div class="record-box">
+                <!-- ERRORS -->
 
-                <div class="status" id="status">
-                    Ready to record
+                {% if messages %}
+
+                    {% for msg in messages %}
+
+                        <div class="alert-box alert-error">
+
+                            ⚠️ {{ msg }}
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+                {% if form.errors %}
+
+                    <div class="alert-box alert-warning">
+
+                        <strong>Form Error:</strong>
+                        {{ form.errors }}
+
+                    </div>
+
+                {% endif %}
+
+                <!-- PATIENT DETAILS -->
+
+                <div class="form-grid">
+
+                    <div class="input-group">
+
+                        <label class="input-label">
+
+                            Patient Name
+
+                        </label>
+
+                        <input type="text"
+                               name="patient_name"
+                               class="form-control"
+                               placeholder="Enter patient name"
+                               required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label class="input-label">
+
+                            Age
+
+                        </label>
+
+                        <input type="text"
+                               name="patient_age"
+                               class="form-control"
+                               placeholder="e.g. 25">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label class="input-label">
+
+                            Gender
+
+                        </label>
+
+                        <input type="text"
+                               name="patient_gender"
+                               class="form-control"
+                               placeholder="Male / Female">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label class="input-label">
+
+                            Contact Number
+
+                        </label>
+
+                        <input type="text"
+                               name="patient_contact"
+                               class="form-control"
+                               placeholder="e.g. 9876543210">
+
+                    </div>
+
                 </div>
 
-                <div class="record-buttons">
-                    <button
-                        type="button"
-                        class="record-btn start-btn"
-                        id="startBtn"
-                    >
-                        ▶ Start Recording
-                    </button>
+                <!-- UPLOAD -->
 
-                    <button
-                        type="button"
-                        class="record-btn stop-btn"
-                        id="stopBtn"
-                        disabled
-                    >
-                        ■ Stop Recording
-                    </button>
+                <div style="margin-top:36px;">
+
+                    <div class="upload-zone">
+
+                        <input type="file"
+                               name="audio_file"
+                               accept="audio/*">
+
+                        <div class="upload-icon">
+
+                            🎤
+
+                        </div>
+
+                        <div class="upload-title">
+
+                            Drag & Drop Audio Files
+
+                        </div>
+
+                        <div class="upload-desc">
+
+                            Upload MP3, WAV, or M4A healthcare recordings
+                            securely for AI transcription.
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <audio id="audioPlayback" controls></audio>
+                <div class="divider">
+
+                    OR RECORD LIVE AUDIO
+
+                </div>
+
+                <!-- RECORDING -->
+
+                <div class="record-box">
+
+                    <div class="record-top">
+
+                        <div class="record-title">
+
+                            🎙 Live Microphone Recording
+
+                        </div>
+
+                        <div class="record-status"
+                             id="statusWrap">
+
+                            <div class="record-dot"></div>
+
+                            <span id="statusText">
+
+                                Ready to record
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="wave-box">
+
+                        <div class="wave-animation">
+
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="record-buttons">
+
+                        <button type="button"
+                                class="record-btn start-btn"
+                                id="startBtn">
+
+                            ▶ Start Recording
+
+                        </button>
+
+                        <button type="button"
+                                class="record-btn stop-btn"
+                                id="stopBtn"
+                                disabled>
+
+                            ■ Stop Recording
+
+                        </button>
+
+                    </div>
+
+                    <audio id="audioPlayback"
+                           controls></audio>
+
+                </div>
+
+                <!-- HIDDEN AUDIO -->
+
+                <input type="hidden"
+                       name="recorded_audio"
+                       id="recordedAudio">
+
+                <!-- SUBMIT -->
+
+                <button type="submit"
+                        class="submit-btn">
+
+                    🚀 Upload & Generate Clinical Report
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- SIDE -->
+
+        <div class="side-column">
+
+            <div class="side-card">
+
+                <div class="side-title">
+
+                    ⚡ AI Workflow
+
+                </div>
+
+                <div class="workflow">
+
+                    <div class="workflow-step">
+
+                        <div class="workflow-icon">
+                            🎤
+                        </div>
+
+                        <div>
+
+                            <div class="workflow-title">
+
+                                Upload Audio
+
+                            </div>
+
+                            <div class="workflow-desc">
+
+                                Upload or record doctor–patient
+                                healthcare conversations.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="workflow-step">
+
+                        <div class="workflow-icon">
+                            🤖
+                        </div>
+
+                        <div>
+
+                            <div class="workflow-title">
+
+                                AI Transcription
+
+                            </div>
+
+                            <div class="workflow-desc">
+
+                                Whisper AI converts speech into
+                                accurate medical text.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="workflow-step">
+
+                        <div class="workflow-icon">
+                            🩺
+                        </div>
+
+                        <div>
+
+                            <div class="workflow-title">
+
+                                NLP Analysis
+
+                            </div>
+
+                            <div class="workflow-desc">
+
+                                Clinical entities and medical
+                                summaries are generated.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="workflow-step">
+
+                        <div class="workflow-icon">
+                            📄
+                        </div>
+
+                        <div>
+
+                            <div class="workflow-title">
+
+                                Final Report
+
+                            </div>
+
+                            <div class="workflow-desc">
+
+                                Export professional prescriptions
+                                and healthcare documents.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
-            <!-- HIDDEN AUDIO -->
-            <input
-                type="hidden"
-                name="recorded_audio"
-                id="recordedAudio"
-            >
+            <div class="side-card">
 
-            <!-- SUBMIT -->
-            <button type="submit" class="upload-btn">
-                Upload &amp; Transcribe
-            </button>
+                <div class="side-title">
 
-        </form>
+                    🔒 Security & AI
+
+                </div>
+
+                <div class="workflow">
+
+                    <div class="workflow-step">
+
+                        <div class="workflow-icon">
+                            🔐
+                        </div>
+
+                        <div>
+
+                            <div class="workflow-title">
+
+                                Encrypted Storage
+
+                            </div>
+
+                            <div class="workflow-desc">
+
+                                Secure healthcare audio processing
+                                and storage system.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="workflow-step">
+
+                        <div class="workflow-icon">
+                            ☁
+                        </div>
+
+                        <div>
+
+                            <div class="workflow-title">
+
+                                AI Processing
+
+                            </div>
+
+                            <div class="workflow-desc">
+
+                                Whisper AI + Medical NLP pipeline.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
 </div>
 
 <script>
-
 let mediaRecorder;
 let audioChunks = [];
 let audioBlob;
+let isRecorded = false;
 
-const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
-const statusText = document.getElementById("status");
+const startBtn      = document.getElementById("startBtn");
+const stopBtn       = document.getElementById("stopBtn");
 const audioPlayback = document.getElementById("audioPlayback");
 
-startBtn.addEventListener("click", async () => {
+function setStatus(msg) {
+    const el = document.getElementById("status") ||
+               document.getElementById("recordingStatus");
+    if (el) el.innerHTML = msg;
+}
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+if (startBtn) {
+    startBtn.addEventListener("click", async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            mediaRecorder.start();
+            setStatus("🔴 Recording...");
+            startBtn.disabled = true;
+            stopBtn.disabled  = false;
 
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.start();
-    audioChunks = [];
+            mediaRecorder.addEventListener("dataavailable", e => {
+                if (e.data.size > 0) audioChunks.push(e.data);
+            });
 
-    statusText.innerHTML = "🔴 Recording...";
-    statusText.classList.add("recording");
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
+            mediaRecorder.addEventListener("stop", () => {
+                audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                if (audioPlayback) audioPlayback.src = URL.createObjectURL(audioBlob);
+                isRecorded = true;
+                setStatus("✅ Ready to upload");
 
-    mediaRecorder.addEventListener("dataavailable", event => {
-        audioChunks.push(event.data);
+                // Convert to base64 and store in hidden field
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = () => {
+                    const hidden = document.getElementById("recordedAudio");
+                    if (hidden) hidden.value = reader.result;
+                };
+            });
+        } catch (err) {
+            alert("Microphone error: " + err.message);
+        }
     });
+}
 
-    mediaRecorder.addEventListener("stop", () => {
-
-        audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-        const audioURL = URL.createObjectURL(audioBlob);
-        audioPlayback.src = audioURL;
-
-        const reader = new FileReader();
-        reader.readAsDataURL(audioBlob);
-        reader.onloadend = () => {
-            document.getElementById("recordedAudio").value = reader.result;
-        };
-
+if (stopBtn) {
+    stopBtn.addEventListener("click", () => {
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+            mediaRecorder.stream.getTracks().forEach(t => t.stop());
+        }
+        startBtn.disabled = false;
+        stopBtn.disabled  = true;
     });
+}
 
+// On submit: if recorded, inject as file; if uploaded file exists, use that
+document.querySelector("form").addEventListener("submit", function(e) {
+    const fileInput    = document.querySelector('input[name="audio_file"]');
+    const hasUpload    = fileInput && fileInput.files && fileInput.files.length > 0;
+    const hasRecording = isRecorded && audioBlob;
+
+    if (!hasUpload && hasRecording) {
+        // Use recorded audio — inject as file
+        e.preventDefault();
+        const file = new File([audioBlob], "recorded_audio.webm", { type: "audio/webm" });
+        const dt   = new DataTransfer();
+        dt.items.add(file);
+        fileInput.files = dt.files;
+        this.submit();
+        return;
+    }
+
+    if (!hasUpload && !hasRecording) {
+        e.preventDefault();
+        alert("Please upload an audio file or record live audio first.");
+        return;
+    }
+    // hasUpload = true → normal submit, no intervention needed
 });
-
-stopBtn.addEventListener("click", () => {
-    mediaRecorder.stop();
-    statusText.innerHTML = "Recording completed";
-    statusText.classList.remove("recording");
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-});
-
 </script>
 
 {% endblock %}

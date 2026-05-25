@@ -33,7 +33,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',          # ← MUST be first
     'django.contrib.admin',
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -86,12 +88,8 @@ WSGI_APPLICATION = 'medtranscribe.wsgi.application'
 # }
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.postgresql',
-        'NAME':     'docai_db',
-        'USER':     'postgres',       # default superuser OR docai_user if you created one
-        'PASSWORD': 'docai1234',      # the password you set during installation
-        'HOST':     'localhost',
-        'PORT':     '5433',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -141,3 +139,80 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'    #added
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
+
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "DocAI Admin",
+    "site_header": "DocAI",
+    "site_brand": "DocAI",
+    "site_logo": None,
+    "welcome_sign": "Welcome to DocAI Administration",
+    "copyright": "DocAI Medical Systems",
+
+    # Top menu
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index"},
+        {"name": "View Site", "url": "/", "new_window": False},
+        {"name": "Upload Audio", "url": "/upload/", "new_window": False},
+    ],
+
+    # Sidebar icons for your models
+    "icons": {
+        "auth":                    "fas fa-users-cog",
+        "auth.user":               "fas fa-user-md",
+        "auth.Group":              "fas fa-users",
+        "transcription.AudioRecord":     "fas fa-microphone",
+        "transcription.Transcript":      "fas fa-file-alt",
+        "transcription.ClinicalDocument":"fas fa-notes-medical",
+        "transcription.Transcription":   "fas fa-file-medical",
+    },
+
+    "default_icon_parents": "fas fa-folder",
+    "default_icon_children": "fas fa-circle",
+
+    # UI tweaks
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+
+    "order_with_respect_to": [
+        "transcription",
+        "auth",
+    ],
+
+    "related_modal_active": True,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-primary",
+    "accent": "accent-teal",
+    "navbar": "navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "darkly",           # dark premium theme
+    "dark_mode_theme": "darkly",
+    "button_classes": {
+        "primary":   "btn-primary",
+        "secondary": "btn-secondary",
+        "info":      "btn-info",
+        "warning":   "btn-warning",
+        "danger":    "btn-danger",
+        "success":   "btn-success",
+    },
+}

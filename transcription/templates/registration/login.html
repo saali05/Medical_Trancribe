@@ -1,271 +1,835 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign in — DocAI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --navy:      #0d1b2a;
-      --navy-mid:  #152236;
-      --teal:      #0ea5a0;
-      --teal-dim:  #0a7a76;
-      --teal-glow: rgba(14,165,160,0.12);
-      --slate:     #8fa3b8;
-      --white:     #f0f4f8;
-      --surface:   #172840;
-      --danger:    #e05b5b;
-    }
+    <meta charset="UTF-8">
 
-    html, body {
-      height: 100%;
-      background: var(--navy);
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    .login-wrap {
-      width: 100%;
-      max-width: 400px;
-      padding: 24px;
-      animation: fadeUp 0.4s ease both;
-    }
+    <title>
+        Sign In — DocAI
+    </title>
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    <!-- GOOGLE FONT -->
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 36px;
-    }
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
 
-    .brand-icon {
-      width: 40px; height: 40px;
-      background: var(--teal);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-    }
+    <style>
 
-    .brand-icon svg { width: 22px; height: 22px; fill: white; }
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
 
-    .brand-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      color: var(--white);
-    }
+        :root{
 
-    .brand-name span { color: var(--teal); }
+            --primary:#2563eb;
+            --primary-dark:#1d4ed8;
+            --cyan:#06b6d4;
 
-    .login-card {
-      background: var(--surface);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 32px;
-    }
+            --bg:#f8fafc;
+            --surface:#ffffff;
 
-    .login-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--white);
-      margin-bottom: 4px;
-    }
+            --text:#0f172a;
+            --muted:#64748b;
 
-    .login-subtitle {
-      font-size: 13px;
-      color: var(--slate);
-      margin-bottom: 28px;
-    }
+            --border:#e2e8f0;
 
-    .form-group { margin-bottom: 16px; }
+            --danger:#ef4444;
 
-    .form-label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--slate);
-      margin-bottom: 6px;
-      letter-spacing: 0.03em;
-    }
+            --shadow:
+                0 25px 60px rgba(15,23,42,0.08);
 
-    .form-control {
-      width: 100%;
-      background: var(--navy);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 11px 14px;
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
+            --transition:0.25s ease;
 
-    .form-control:focus { border-color: var(--teal); }
-    .form-control::placeholder { color: rgba(143,163,184,0.5); }
+            --font:'Inter',sans-serif;
 
-    .btn-login {
-      width: 100%;
-      padding: 11px;
-      background: var(--teal);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: background 0.15s;
-      letter-spacing: 0.02em;
-    }
+        }
 
-    .btn-login:hover { background: var(--teal-dim); }
+        body{
 
-    .error-box {
-      background: rgba(224,91,91,0.1);
-      border: 1px solid rgba(224,91,91,0.25);
-      border-radius: 8px;
-      padding: 11px 14px;
-      font-size: 13px;
-      color: var(--danger);
-      margin-bottom: 18px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+            min-height:100vh;
 
-    .error-box svg { width: 15px; height: 15px; flex-shrink: 0; }
+            background:var(--bg);
 
-    .footer-note {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-      color: var(--slate);
-    }
+            font-family:var(--font);
 
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 20px 0;
-      color: rgba(143,163,184,0.4);
-      font-size: 11px;
-    }
+            overflow:hidden;
 
-    .divider::before,
-    .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(255,255,255,0.07);
-    }
+            position:relative;
 
-    .info-pills {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 28px;
-    }
+            display:flex;
+            align-items:center;
+            justify-content:center;
 
-    .info-pill {
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      font-size: 11px;
-      color: var(--slate);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
+            padding:40px;
 
-    .info-pill svg { width: 11px; height: 11px; }
-  </style>
+        }
+
+        /* BACKGROUND GLOW */
+
+        body::before{
+
+            content:'';
+
+            position:absolute;
+
+            width:600px;
+            height:600px;
+
+            background:rgba(37,99,235,0.10);
+
+            filter:blur(120px);
+
+            top:-250px;
+            right:-200px;
+
+            z-index:-1;
+
+        }
+
+        body::after{
+
+            content:'';
+
+            position:absolute;
+
+            width:500px;
+            height:500px;
+
+            background:rgba(6,182,212,0.10);
+
+            filter:blur(120px);
+
+            bottom:-220px;
+            left:-180px;
+
+            z-index:-1;
+
+        }
+
+        .login-container{
+
+            width:100%;
+            max-width:1320px;
+
+            display:grid;
+
+            grid-template-columns:1.1fr 520px;
+
+            gap:36px;
+
+            align-items:center;
+
+        }
+
+        /* HERO */
+
+        .hero-section{
+
+            position:relative;
+
+            padding:70px;
+
+            border-radius:40px;
+
+            overflow:hidden;
+
+            background:linear-gradient(
+                135deg,
+                #2563eb,
+                #06b6d4
+            );
+
+            min-height:720px;
+
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+
+            color:white;
+
+            box-shadow:
+                0 30px 80px rgba(37,99,235,0.22);
+
+        }
+
+        .hero-section::before{
+
+            content:'';
+
+            position:absolute;
+
+            width:420px;
+            height:420px;
+
+            background:rgba(255,255,255,0.10);
+
+            border-radius:50%;
+
+            top:-180px;
+            right:-180px;
+
+        }
+
+        .hero-section::after{
+
+            content:'';
+
+            position:absolute;
+
+            width:300px;
+            height:300px;
+
+            background:rgba(255,255,255,0.08);
+
+            border-radius:50%;
+
+            bottom:-120px;
+            left:-120px;
+
+        }
+
+        .hero-top{
+
+            position:relative;
+            z-index:2;
+
+        }
+
+        .brand{
+
+            display:flex;
+            align-items:center;
+            gap:14px;
+
+            margin-bottom:60px;
+
+        }
+
+        .brand-icon{
+
+            width:58px;
+            height:58px;
+
+            border-radius:18px;
+
+            background:rgba(255,255,255,0.14);
+
+            backdrop-filter:blur(12px);
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+        }
+
+        .brand-icon svg{
+
+            width:30px;
+            height:30px;
+
+            fill:white;
+
+        }
+
+        .brand-name{
+
+            font-size:34px;
+
+            font-weight:800;
+
+            letter-spacing:-1px;
+
+        }
+
+        .brand-name span{
+
+            opacity:0.8;
+
+            font-weight:600;
+
+        }
+
+        .hero-title{
+
+            font-size:64px;
+
+            font-weight:800;
+
+            line-height:1.05;
+
+            letter-spacing:-2px;
+
+            max-width:700px;
+
+            margin-bottom:24px;
+
+        }
+
+        .hero-description{
+
+            font-size:18px;
+
+            line-height:1.9;
+
+            opacity:0.92;
+
+            max-width:650px;
+
+        }
+
+        .hero-cards{
+
+            display:grid;
+
+            grid-template-columns:repeat(2,1fr);
+
+            gap:20px;
+
+            margin-top:50px;
+
+            position:relative;
+            z-index:2;
+
+        }
+
+        .hero-card{
+
+            background:rgba(255,255,255,0.12);
+
+            border:1px solid rgba(255,255,255,0.18);
+
+            backdrop-filter:blur(16px);
+
+            border-radius:26px;
+
+            padding:24px;
+
+        }
+
+        .hero-card-title{
+
+            font-size:14px;
+
+            opacity:0.85;
+
+            margin-bottom:12px;
+
+        }
+
+        .hero-card-value{
+
+            font-size:34px;
+
+            font-weight:800;
+
+            margin-bottom:8px;
+
+        }
+
+        .hero-card-desc{
+
+            font-size:13px;
+
+            opacity:0.82;
+
+            line-height:1.6;
+
+        }
+
+        /* LOGIN SECTION */
+
+        .login-section{
+
+            background:rgba(255,255,255,0.84);
+
+            backdrop-filter:blur(20px);
+
+            border-radius:40px;
+
+            padding:48px;
+
+            box-shadow:var(--shadow);
+
+            border:1px solid rgba(255,255,255,0.6);
+
+            animation:fadeUp 0.5s ease;
+
+        }
+
+        @keyframes fadeUp{
+
+            from{
+                opacity:0;
+                transform:translateY(18px);
+            }
+
+            to{
+                opacity:1;
+                transform:translateY(0);
+            }
+
+        }
+
+        .login-badge{
+
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+
+            padding:10px 16px;
+
+            border-radius:999px;
+
+            background:rgba(37,99,235,0.08);
+
+            color:#2563eb;
+
+            font-size:12px;
+
+            font-weight:700;
+
+            margin-bottom:26px;
+
+        }
+
+        .login-title{
+
+            font-size:42px;
+
+            font-weight:800;
+
+            color:var(--text);
+
+            margin-bottom:14px;
+
+            line-height:1.1;
+
+            letter-spacing:-1px;
+
+        }
+
+        .login-subtitle{
+
+            color:var(--muted);
+
+            font-size:15px;
+
+            line-height:1.8;
+
+            margin-bottom:36px;
+
+        }
+
+        .form-group{
+
+            margin-bottom:22px;
+
+        }
+
+        .form-label{
+
+            display:block;
+
+            margin-bottom:10px;
+
+            font-size:13px;
+
+            font-weight:700;
+
+            color:var(--text);
+
+        }
+
+        .form-control{
+
+            width:100%;
+
+            background:#f8fafc;
+
+            border:1px solid #e2e8f0;
+
+            border-radius:20px;
+
+            padding:18px 20px;
+
+            font-size:15px;
+
+            color:var(--text);
+
+            outline:none;
+
+            transition:var(--transition);
+
+            font-family:var(--font);
+
+        }
+
+        .form-control:focus{
+
+            border-color:#93c5fd;
+
+            box-shadow:
+                0 0 0 5px rgba(37,99,235,0.08);
+
+            background:white;
+
+        }
+
+        .form-control::placeholder{
+
+            color:#94a3b8;
+
+        }
+
+        .btn-login{
+
+            width:100%;
+
+            border:none;
+
+            padding:18px;
+
+            border-radius:20px;
+
+            background:linear-gradient(
+                135deg,
+                #2563eb,
+                #06b6d4
+            );
+
+            color:white;
+
+            font-size:15px;
+
+            font-weight:700;
+
+            cursor:pointer;
+
+            transition:0.25s ease;
+
+            margin-top:10px;
+
+            box-shadow:
+                0 16px 35px rgba(37,99,235,0.20);
+
+        }
+
+        .btn-login:hover{
+
+            transform:translateY(-3px);
+
+            box-shadow:
+                0 20px 45px rgba(37,99,235,0.25);
+
+        }
+
+        .error-box{
+
+            display:flex;
+            align-items:flex-start;
+            gap:12px;
+
+            padding:18px;
+
+            border-radius:20px;
+
+            background:rgba(239,68,68,0.08);
+
+            border:1px solid rgba(239,68,68,0.14);
+
+            color:var(--danger);
+
+            margin-bottom:28px;
+
+            font-size:14px;
+
+            line-height:1.7;
+
+        }
+
+        .footer-note{
+
+            text-align:center;
+
+            margin-top:26px;
+
+            color:var(--muted);
+
+            font-size:13px;
+
+        }
+
+        .register-link{
+
+            margin-top:22px;
+
+            text-align:center;
+
+            color:var(--muted);
+
+            font-size:14px;
+
+        }
+
+        .register-link a{
+
+            color:#2563eb;
+
+            text-decoration:none;
+
+            font-weight:700;
+
+        }
+
+        .feature-pills{
+
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+
+            margin-top:34px;
+
+        }
+
+        .feature-pill{
+
+            display:flex;
+            align-items:center;
+            gap:8px;
+
+            padding:10px 14px;
+
+            border-radius:999px;
+
+            background:#f8fafc;
+
+            border:1px solid #e2e8f0;
+
+            font-size:12px;
+
+            font-weight:700;
+
+            color:var(--muted);
+
+        }
+
+    </style>
+
 </head>
+
 <body>
 
-<div class="login-wrap">
-  <div class="brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3a1 1 0 110 2 1 1 0 010-2zm3 10H9v-1h6v1zm0-3H9v-1h6v1zm0-3h-4v-1h4v1z"/></svg>
+<div class="login-container">
+
+    <!-- HERO -->
+
+    <div class="hero-section">
+
+        <div class="hero-top">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+
+                    🩺
+
+                </div>
+
+                <div class="brand-name">
+
+                    Doc<span>AI</span>
+
+                </div>
+
+            </div>
+
+            <div class="hero-title">
+
+                AI-Powered Clinical Documentation
+
+            </div>
+
+            <div class="hero-description">
+
+                Transform healthcare conversations into
+                professional clinical summaries,
+                prescriptions, and medical reports using
+                advanced AI speech recognition.
+
+            </div>
+
+        </div>
+
+        <div class="hero-cards">
+
+            <div class="hero-card">
+
+                <div class="hero-card-title">
+
+                    AI Accuracy
+
+                </div>
+
+                <div class="hero-card-value">
+
+                    98%
+
+                </div>
+
+                <div class="hero-card-desc">
+
+                    Whisper AI optimized for
+                    healthcare speech recognition.
+
+                </div>
+
+            </div>
+
+            <div class="hero-card">
+
+                <div class="hero-card-title">
+
+                    Security
+
+                </div>
+
+                <div class="hero-card-value">
+
+                    Secure
+
+                </div>
+
+                <div class="hero-card-desc">
+
+                    Protected medical documentation
+                    and clinical workflows.
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-    <div class="brand-name">Doc<span>AI</span></div>
-  </div>
 
-  <div class="login-card">
-    <div class="login-title">Welcome back</div>
-    <div class="login-subtitle">Sign in to your clinical workspace</div>
+    <!-- LOGIN -->
 
-    {% if form.errors %}
-    <div class="error-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Invalid username or password. Please try again.
+    <div class="login-section">
+
+        <div class="login-badge">
+
+            🔒 Secure Healthcare Workspace
+
+        </div>
+
+        <div class="login-title">
+
+            Welcome back
+
+        </div>
+
+        <div class="login-subtitle">
+
+            Sign in to access your AI-powered
+            clinical documentation platform.
+
+        </div>
+
+        {% if form.errors %}
+
+        <div class="error-box">
+
+            Invalid username or password.
+            Please try again.
+
+        </div>
+
+        {% endif %}
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label class="form-label">
+
+                    Username
+
+                </label>
+
+                <input type="text"
+                       name="username"
+                       class="form-control"
+                       placeholder="Enter username">
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="form-label">
+
+                    Password
+
+                </label>
+
+                <input type="password"
+                       name="password"
+                       class="form-control"
+                       placeholder="Enter password">
+
+            </div>
+
+            <button type="submit"
+                    class="btn-login">
+
+                Sign In
+
+            </button>
+
+        </form>
+
+        <div class="register-link">
+
+            Don't have an account?
+
+            <a href="{% url 'register' %}">
+
+                Create Account
+
+            </a>
+
+        </div>
+
+        <div class="footer-note">
+
+            Secure clinical workspace · AI healthcare platform
+
+        </div>
+
+        <div class="feature-pills">
+
+            <div class="feature-pill">
+                🔐 Encrypted
+            </div>
+
+            <div class="feature-pill">
+                🤖 Whisper AI
+            </div>
+
+            <div class="feature-pill">
+                🩺 Medical NLP
+            </div>
+
+        </div>
+
     </div>
-    {% endif %}
 
-    <form method="post">
-      {% csrf_token %}
-      <div class="form-group">
-        <label class="form-label" for="id_username">Username</label>
-        <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" autofocus autocomplete="username">
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="id_password">Password</label>
-        <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter your password" autocomplete="current-password">
-      </div>
-      <button type="submit" class="btn-login">Sign in</button>
-      <div style="
-    text-align:center;
-    margin-top:18px;
-    font-size:13px;
-    color:var(--slate);
-    ">
-
-    Don't have an account?
-
-    <a href="{% url 'register' %}" style="
-        color:var(--teal);
-        text-decoration:none;
-        font-weight:600;
-    ">
-        Create Account
-    </a>
-
-    </div>
-    </form>
-
-    <div class="footer-note">
-      Secure clinical workspace · Data stays local
-    </div>
-  </div>
-
-  <div class="info-pills">
-    <span class="info-pill">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-      Encrypted
-    </span>
-    <span class="info-pill">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Whisper AI
-    </span>
-    <span class="info-pill">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      HIPAA-ready
-    </span>
-  </div>
 </div>
 
 </body>

@@ -2,326 +2,642 @@
 
 {% block title %}Dashboard — DocAI{% endblock %}
 {% block nav_dashboard %}active{% endblock %}
-{% block topbar_title %}Dashboard{% endblock %}
+
+{% block topbar_title %}
+Dashboard
+{% endblock %}
+
 {% block topbar_subtitle %}
 Welcome back, Dr. {{ user.get_full_name|default:user.username }}
 {% endblock %}
 
 {% block topbar_actions %}
+
 <a href="{% url 'upload_audio' %}" class="btn btn-primary">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+
+    <svg viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2.5"
+         width="18"
+         height="18">
+
         <line x1="12" y1="5" x2="12" y2="19"/>
         <line x1="5" y1="12" x2="19" y2="12"/>
+
     </svg>
-    New transcription
+
+    New Transcription
+
 </a>
+
 {% endblock %}
 
 {% block extra_styles %}
 
 <style>
 
-.stats-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:16px;
+.dashboard-hero{
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+    );
+
+    border-radius:32px;
+
+    padding:42px;
+
     margin-bottom:28px;
+
+    color:white;
+
+    box-shadow:
+        0 25px 60px rgba(37,99,235,0.25);
+
+}
+
+.dashboard-hero::before{
+
+    content:'';
+
+    position:absolute;
+
+    width:320px;
+    height:320px;
+
+    background:rgba(255,255,255,0.12);
+
+    border-radius:50%;
+
+    top:-120px;
+    right:-120px;
+
+}
+
+.hero-grid{
+
+    display:grid;
+
+    grid-template-columns:1.2fr 320px;
+
+    gap:30px;
+
+    align-items:center;
+
+    position:relative;
+    z-index:2;
+
+}
+
+.hero-title{
+
+    font-size:42px;
+
+    font-weight:800;
+
+    line-height:1.1;
+
+    margin-bottom:14px;
+
+}
+
+.hero-desc{
+
+    font-size:15px;
+
+    opacity:0.92;
+
+    line-height:1.8;
+
+    max-width:700px;
+
+}
+
+.hero-actions{
+
+    margin-top:28px;
+
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+
+}
+
+.hero-btn{
+
+    padding:14px 22px;
+
+    border-radius:16px;
+
+    font-weight:700;
+
+    font-size:14px;
+
+    transition:0.25s ease;
+
+}
+
+.hero-btn-primary{
+
+    background:white;
+    color:#2563eb;
+
+}
+
+.hero-btn-primary:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.hero-btn-secondary{
+
+    background:rgba(255,255,255,0.12);
+
+    color:white;
+
+    backdrop-filter:blur(12px);
+
+    border:1px solid rgba(255,255,255,0.2);
+
+}
+
+.hero-card{
+
+    background:rgba(255,255,255,0.12);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,0.2);
+
+    border-radius:28px;
+
+    padding:26px;
+
+}
+
+.hero-mini-title{
+
+    font-size:14px;
+
+    opacity:0.9;
+
+    margin-bottom:18px;
+
+}
+
+.hero-stat{
+
+    margin-bottom:22px;
+
+}
+
+.hero-stat-value{
+
+    font-size:34px;
+
+    font-weight:800;
+
+}
+
+.hero-stat-label{
+
+    font-size:13px;
+
+    opacity:0.82;
+
+}
+
+.stats-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:22px;
+
+    margin-bottom:28px;
+
 }
 
 .stat-card{
-    background:var(--surface);
-    border:1px solid rgba(255,255,255,0.07);
-    border-radius:var(--radius-lg);
-    padding:20px 22px;
+
+    background:rgba(255,255,255,0.82);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:28px;
+
+    padding:28px;
+
     position:relative;
+
     overflow:hidden;
-    transition:border-color 0.2s;
+
+    box-shadow:var(--shadow);
+
+    transition:0.25s ease;
+
 }
 
 .stat-card:hover{
-    border-color:rgba(14,165,160,0.3);
+
+    transform:translateY(-5px);
+
 }
 
 .stat-card::before{
+
     content:'';
+
     position:absolute;
-    top:0;
-    right:0;
-    width:80px;
-    height:80px;
-    border-radius:0 var(--radius-lg) 0 80px;
-    opacity:0.07;
+
+    top:-40px;
+    right:-40px;
+
+    width:140px;
+    height:140px;
+
+    border-radius:50%;
+
+    opacity:0.12;
+
 }
 
-.stat-card.c-teal::before{
-    background:var(--teal);
+.stat-card.blue::before{
+    background:#2563eb;
 }
 
-.stat-card.c-blue::before{
-    background:#3b82f6;
+.stat-card.green::before{
+    background:#10b981;
 }
 
-.stat-card.c-green::before{
-    background:var(--success);
+.stat-card.cyan::before{
+    background:#06b6d4;
 }
 
-.stat-card.c-amber::before{
-    background:var(--warn);
+.stat-card.orange::before{
+    background:#f59e0b;
 }
 
 .stat-icon{
-    width:36px;
-    height:36px;
-    border-radius:9px;
+
+    width:52px;
+    height:52px;
+
+    border-radius:16px;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    margin-bottom:14px;
+
+    margin-bottom:18px;
+
+}
+
+.blue .stat-icon{
+
+    background:rgba(37,99,235,0.10);
+
+    color:#2563eb;
+
+}
+
+.green .stat-icon{
+
+    background:rgba(16,185,129,0.10);
+
+    color:#10b981;
+
+}
+
+.cyan .stat-icon{
+
+    background:rgba(6,182,212,0.10);
+
+    color:#06b6d4;
+
+}
+
+.orange .stat-icon{
+
+    background:rgba(245,158,11,0.10);
+
+    color:#f59e0b;
+
 }
 
 .stat-icon svg{
-    width:18px;
-    height:18px;
-}
 
-.c-teal .stat-icon{
-    background:rgba(14,165,160,0.15);
-    color:var(--teal);
-}
+    width:24px;
+    height:24px;
 
-.c-blue .stat-icon{
-    background:rgba(59,130,246,0.15);
-    color:#60a5fa;
-}
-
-.c-green .stat-icon{
-    background:rgba(46,184,124,0.15);
-    color:var(--success);
-}
-
-.c-amber .stat-icon{
-    background:rgba(224,160,37,0.15);
-    color:var(--warn);
 }
 
 .stat-value{
-    font-size:28px;
-    font-weight:600;
-    color:var(--white);
-    line-height:1;
-    margin-bottom:4px;
-    font-family:var(--font-mono);
+
+    font-size:38px;
+
+    font-weight:800;
+
+    color:var(--text);
+
+    margin-bottom:6px;
+
 }
 
 .stat-label{
-    font-size:12px;
-    color:var(--slate);
-}
 
-.stat-change{
-    font-size:11px;
-    margin-top:8px;
-    display:flex;
-    align-items:center;
-    gap:4px;
-}
+    color:var(--muted);
 
-.stat-change.up{
-    color:var(--success);
-}
+    font-size:14px;
 
-.stat-change.same{
-    color:var(--slate);
+    font-weight:500;
+
 }
 
 .content-grid{
+
     display:grid;
-    grid-template-columns:1fr 300px;
-    gap:20px;
+
+    grid-template-columns:1fr 340px;
+
+    gap:24px;
+
+}
+
+.table-card{
+
+    background:rgba(255,255,255,0.82);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:30px;
+
+    padding:28px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.section-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:24px;
+
+}
+
+.section-title{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:var(--text);
+
 }
 
 .table-wrap{
+
     overflow-x:auto;
+
 }
 
 table{
+
     width:100%;
+
     border-collapse:collapse;
+
 }
 
 thead th{
+
     text-align:left;
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:0.08em;
+
+    padding:16px;
+
+    font-size:12px;
+
     text-transform:uppercase;
-    color:var(--slate-dim);
-    padding:0 12px 12px;
-    border-bottom:1px solid rgba(255,255,255,0.07);
-}
 
-tbody tr{
-    border-bottom:1px solid rgba(255,255,255,0.04);
-    transition:background 0.12s;
-}
+    letter-spacing:0.08em;
 
-tbody tr:last-child{
-    border-bottom:none;
-}
+    color:var(--muted);
 
-tbody tr:hover{
-    background:rgba(255,255,255,0.03);
+    border-bottom:1px solid #e2e8f0;
+
 }
 
 tbody td{
-    padding:13px 12px;
-    font-size:13px;
-    color:var(--white-dim);
-    vertical-align:middle;
+
+    padding:18px 16px;
+
+    border-bottom:1px solid #f1f5f9;
+
+    color:var(--text);
+
+    font-size:14px;
+
+}
+
+tbody tr{
+
+    transition:0.2s ease;
+
+}
+
+tbody tr:hover{
+
+    background:#f8fafc;
+
 }
 
 .audio-thumb{
+
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:14px;
+
 }
 
 .audio-icon{
-    width:34px;
-    height:34px;
-    border-radius:8px;
-    background:var(--teal-glow);
-    border:1px solid rgba(14,165,160,0.2);
+
+    width:48px;
+    height:48px;
+
+    border-radius:16px;
+
+    background:rgba(37,99,235,0.10);
+
     display:flex;
     align-items:center;
     justify-content:center;
-    flex-shrink:0;
+
+    color:#2563eb;
+
 }
 
 .audio-icon svg{
-    width:15px;
-    height:15px;
-    color:var(--teal);
+
+    width:20px;
+    height:20px;
+
 }
 
 .file-name{
-    font-size:13px;
-    color:var(--white);
-    font-weight:500;
+
+    font-weight:600;
+
+    margin-bottom:4px;
+
 }
 
 .file-meta{
-    font-size:11px;
-    color:var(--slate);
-    margin-top:1px;
+
+    color:var(--muted);
+
+    font-size:12px;
+
 }
 
-.empty-state{
-    text-align:center;
-    padding:60px 20px;
-}
+.side-column{
 
-.empty-icon{
-    width:56px;
-    height:56px;
-    border-radius:14px;
-    background:rgba(255,255,255,0.05);
     display:flex;
-    align-items:center;
-    justify-content:center;
-    margin:0 auto 16px;
+    flex-direction:column;
+    gap:24px;
+
 }
 
-.empty-icon svg{
-    width:26px;
-    height:26px;
-    color:var(--slate-dim);
-}
+.side-card{
 
-.empty-title{
-    font-size:15px;
-    font-weight:500;
-    color:var(--white);
-    margin-bottom:6px;
-}
+    background:rgba(255,255,255,0.82);
 
-.empty-desc{
-    font-size:13px;
-    color:var(--slate);
-    margin-bottom:20px;
+    backdrop-filter:blur(18px);
+
+    border-radius:28px;
+
+    padding:26px;
+
+    box-shadow:var(--shadow);
+
 }
 
 .quick-actions{
+
     display:flex;
     flex-direction:column;
-    gap:10px;
+    gap:14px;
+
 }
 
-.quick-action-btn{
+.quick-btn{
+
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:13px 14px;
-    background:var(--navy);
-    border:1px solid rgba(255,255,255,0.07);
-    border-radius:var(--radius);
-    text-decoration:none;
-    transition:all 0.15s;
+    gap:16px;
+
+    padding:16px;
+
+    border-radius:20px;
+
+    background:#f8fafc;
+
+    border:1px solid #e2e8f0;
+
+    transition:0.25s ease;
+
 }
 
-.quick-action-btn:hover{
-    border-color:rgba(14,165,160,0.3);
-    background:var(--teal-glow);
+.quick-btn:hover{
+
+    transform:translateY(-3px);
+
+    border-color:#bfdbfe;
+
+    background:white;
+
 }
 
-.qa-icon{
-    width:34px;
-    height:34px;
-    border-radius:8px;
+.quick-icon{
+
+    width:48px;
+    height:48px;
+
+    border-radius:14px;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    flex-shrink:0;
+
+    font-size:20px;
+
 }
 
-.qa-icon svg{
-    width:17px;
-    height:17px;
+.quick-blue{
+    background:rgba(37,99,235,0.10);
 }
 
-.qa-teal{
-    background:rgba(14,165,160,0.15);
-    color:var(--teal);
+.quick-cyan{
+    background:rgba(6,182,212,0.10);
 }
 
-.qa-blue{
-    background:rgba(59,130,246,0.15);
-    color:#60a5fa;
+.quick-title{
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:var(--text);
+
 }
 
-.qa-label{
-    font-size:13px;
-    font-weight:500;
-    color:var(--white);
+.quick-desc{
+
+    font-size:12px;
+
+    color:var(--muted);
+
+    margin-top:3px;
+
 }
 
-.qa-desc{
-    font-size:11px;
-    color:var(--slate);
-    margin-top:1px;
+.empty-state{
+
+    text-align:center;
+
+    padding:70px 20px;
+
 }
 
-.qa-arrow{
-    margin-left:auto;
-    color:var(--slate-dim);
+.empty-title{
+
+    font-size:18px;
+
+    font-weight:700;
+
+    margin-bottom:10px;
+
 }
 
-.qa-arrow svg{
-    width:15px;
-    height:15px;
+.empty-desc{
+
+    color:var(--muted);
+
+    margin-bottom:22px;
+
 }
 
-@media (max-width:1200px){
+@media(max-width:1200px){
 
     .stats-grid{
         grid-template-columns:repeat(2,1fr);
@@ -331,12 +647,24 @@ tbody td{
         grid-template-columns:1fr;
     }
 
+    .hero-grid{
+        grid-template-columns:1fr;
+    }
+
 }
 
-@media (max-width:700px){
+@media(max-width:700px){
 
     .stats-grid{
         grid-template-columns:1fr;
+    }
+
+    .dashboard-hero{
+        padding:28px;
+    }
+
+    .hero-title{
+        font-size:32px;
     }
 
 }
@@ -347,15 +675,112 @@ tbody td{
 
 {% block content %}
 
+<!-- HERO -->
+
+<div class="dashboard-hero fade-up">
+
+    <div class="hero-grid">
+
+        <div>
+
+            <div class="hero-title">
+                AI-Powered Clinical Documentation
+            </div>
+
+            <div class="hero-desc">
+
+                Transform patient conversations into structured medical reports,
+                prescriptions, and clinical summaries instantly using AI-powered
+                transcription and healthcare NLP.
+
+            </div>
+
+            <div class="hero-actions">
+
+                <a href="{% url 'upload_audio' %}"
+                   class="hero-btn hero-btn-primary">
+
+                    Start Transcribing
+
+                </a>
+
+                <a href="/admin/"
+                   class="hero-btn hero-btn-secondary">
+
+                    Open Admin Panel
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="hero-card">
+
+            <div class="hero-mini-title">
+                System Overview
+            </div>
+
+            <div class="hero-stat">
+
+                <div class="hero-stat-value">
+                    {{ records.count }}
+                </div>
+
+                <div class="hero-stat-label">
+                    Total AI Transcriptions
+                </div>
+
+            </div>
+
+            <div class="hero-stat">
+
+                <div class="hero-stat-value">
+                    98%
+                </div>
+
+                <div class="hero-stat-label">
+                    AI Accuracy Rate
+                </div>
+
+            </div>
+
+            <div class="hero-stat">
+
+                <div class="hero-stat-value">
+                    ~2m
+                </div>
+
+                <div class="hero-stat-label">
+                    Average Processing Time
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- STATS -->
+
 <div class="stats-grid fade-up">
 
-    <div class="stat-card c-teal">
+    <div class="stat-card blue">
 
         <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
+
             </svg>
+
         </div>
 
         <div class="stat-value">
@@ -363,18 +788,17 @@ tbody td{
         </div>
 
         <div class="stat-label">
-            Total transcriptions
+            Total Transcriptions
         </div>
 
     </div>
 
-    <div class="stat-card c-green">
+    <div class="stat-card green">
 
         <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
+
+            ✅
+
         </div>
 
         <div class="stat-value">
@@ -382,18 +806,17 @@ tbody td{
         </div>
 
         <div class="stat-label">
-            Approved documents
+            Approved Reports
         </div>
 
     </div>
 
-    <div class="stat-card c-blue">
+    <div class="stat-card cyan">
 
         <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-            </svg>
+
+            ⏱
+
         </div>
 
         <div class="stat-value">
@@ -401,18 +824,17 @@ tbody td{
         </div>
 
         <div class="stat-label">
-            Avg. processing time
+            Avg Processing Time
         </div>
 
     </div>
 
-    <div class="stat-card c-amber">
+    <div class="stat-card orange">
 
         <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/>
-                <path d="M19 10v2a7 7 0 01-14 0v-2"/>
-            </svg>
+
+            🤖
+
         </div>
 
         <div class="stat-value">
@@ -420,25 +842,29 @@ tbody td{
         </div>
 
         <div class="stat-label">
-            Whisper engine
+            Whisper Engine
         </div>
 
     </div>
 
 </div>
 
+<!-- CONTENT -->
+
 <div class="content-grid">
 
-    <div class="card fade-up">
+    <!-- TABLE -->
 
-        <div class="card-header">
+    <div class="table-card fade-up">
 
-            <div class="card-title">
-                Recent transcriptions
+        <div class="section-header">
+
+            <div class="section-title">
+                Recent Transcriptions
             </div>
 
-            <span class="badge badge-teal">
-                {{ records.count }} total
+            <span class="badge badge-primary">
+                {{ records.count }} Records
             </span>
 
         </div>
@@ -452,10 +878,12 @@ tbody td{
                 <thead>
 
                     <tr>
-                        <th>Audio file</th>
+
+                        <th>Audio File</th>
                         <th>Status</th>
                         <th>Uploaded</th>
                         <th>Action</th>
+
                     </tr>
 
                 </thead>
@@ -472,22 +900,22 @@ tbody td{
 
                                 <div class="audio-icon">
 
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M9 18V5l12-2v13"/>
-                                        <circle cx="6" cy="18" r="3"/>
-                                        <circle cx="18" cy="16" r="3"/>
-                                    </svg>
+                                    🎤
 
                                 </div>
 
                                 <div>
 
                                     <div class="file-name">
+
                                         {{ record.audio_file.name|truncatechars:30 }}
+
                                     </div>
 
                                     <div class="file-meta">
+
                                         {{ record.uploaded_at|date:"M d, Y" }}
+
                                     </div>
 
                                 </div>
@@ -500,34 +928,30 @@ tbody td{
 
                             {% if record.transcript.clinicaldocument.is_approved %}
 
-                                <span class="badge badge-success">
-                                    Approved
-                                </span>
+                            <span class="badge badge-success">
+                                Approved
+                            </span>
 
                             {% elif record.transcript.clinicaldocument %}
 
-                                <span class="badge badge-warn">
-                                    Pending review
-                                </span>
-
-                            {% elif record.transcript %}
-
-                                <span class="badge badge-slate">
-                                    Processing
-                                </span>
+                            <span class="badge badge-warning">
+                                Pending
+                            </span>
 
                             {% else %}
 
-                                <span class="badge badge-slate">
-                                    Queued
-                                </span>
+                            <span class="badge badge-primary">
+                                Processing
+                            </span>
 
                             {% endif %}
 
                         </td>
 
                         <td>
+
                             {{ record.uploaded_at|timesince }} ago
+
                         </td>
 
                         <td>
@@ -535,16 +959,16 @@ tbody td{
                             {% if record.transcript.clinicaldocument %}
 
                             <a href="{% url 'view_document' record.transcript.clinicaldocument.pk %}"
-                               class="btn btn-ghost"
-                               style="padding:5px 12px;font-size:12px;">
+                               class="btn btn-primary"
+                               style="padding:10px 16px;font-size:12px;">
 
-                                View
+                                View Report
 
                             </a>
 
                             {% else %}
 
-                            <span class="badge badge-slate">
+                            <span class="badge badge-primary">
                                 —
                             </span>
 
@@ -566,25 +990,22 @@ tbody td{
 
         <div class="empty-state">
 
-            <div class="empty-icon">
-
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/>
-                    <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v3m-4 0h8"/>
-                </svg>
-
-            </div>
-
             <div class="empty-title">
-                No transcriptions yet
+                No Transcriptions Yet
             </div>
 
             <div class="empty-desc">
-                Upload your first clinical audio recording to get started
+
+                Upload your first medical audio recording to generate
+                AI-powered clinical reports.
+
             </div>
 
-            <a href="{% url 'upload_audio' %}" class="btn btn-primary">
-                Start transcribing
+            <a href="{% url 'upload_audio' %}"
+               class="btn btn-primary">
+
+                Upload Audio
+
             </a>
 
         </div>
@@ -593,50 +1014,59 @@ tbody td{
 
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:20px;">
+    <!-- SIDE -->
 
-        <div class="card fade-up">
+    <div class="side-column">
 
-            <div class="card-header" style="margin-bottom:14px;">
+        <div class="side-card fade-up">
 
-                <div class="card-title">
-                    Quick actions
-                </div>
+            <div class="section-title"
+                 style="margin-bottom:18px;">
+
+                Quick Actions
 
             </div>
 
             <div class="quick-actions">
 
-                <a href="{% url 'upload_audio' %}" class="quick-action-btn">
+                <a href="{% url 'upload_audio' %}"
+                   class="quick-btn">
 
-                    <div class="qa-icon qa-teal">
+                    <div class="quick-icon quick-blue">
                         🎤
                     </div>
 
                     <div>
-                        <div class="qa-label">
-                            New transcription
+
+                        <div class="quick-title">
+                            New Transcription
                         </div>
-                        <div class="qa-desc">
+
+                        <div class="quick-desc">
                             Upload or record audio
                         </div>
+
                     </div>
 
                 </a>
 
-                <a href="/admin/" class="quick-action-btn">
+                <a href="/admin/"
+                   class="quick-btn">
 
-                    <div class="qa-icon qa-blue">
-                        ⚙
+                    <div class="quick-icon quick-cyan">
+                        ⚙️
                     </div>
 
                     <div>
-                        <div class="qa-label">
-                            Admin panel
+
+                        <div class="quick-title">
+                            Admin Panel
                         </div>
-                        <div class="qa-desc">
-                            Manage users & data
+
+                        <div class="quick-desc">
+                            Manage users and records
                         </div>
+
                     </div>
 
                 </a>
@@ -645,46 +1075,49 @@ tbody td{
 
         </div>
 
-        <div class="card fade-up">
+        <div class="side-card fade-up">
 
-            <div class="card-title" style="margin-bottom:14px;">
-                System info
+            <div class="section-title"
+                 style="margin-bottom:18px;">
+
+                System Information
+
             </div>
 
-            <div style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;flex-direction:column;gap:14px;">
 
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
 
-                    <span style="font-size:12px;color:var(--slate);">
-                        AI engine
+                    <span style="color:var(--muted);font-size:13px;">
+                        AI Engine
                     </span>
 
-                    <span class="badge badge-teal">
-                        Whisper tiny
+                    <span class="badge badge-primary">
+                        Whisper
                     </span>
 
                 </div>
 
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
 
-                    <span style="font-size:12px;color:var(--slate);">
-                        NLP model
+                    <span style="color:var(--muted);font-size:13px;">
+                        NLP Model
                     </span>
 
-                    <span class="badge badge-teal">
+                    <span class="badge badge-primary">
                         spaCy
                     </span>
 
                 </div>
 
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
 
-                    <span style="font-size:12px;color:var(--slate);">
+                    <span style="color:var(--muted);font-size:13px;">
                         Database
                     </span>
 
                     <span class="badge badge-success">
-                        PostgreSQL
+                        SQLite
                     </span>
 
                 </div>
@@ -703,7 +1136,7 @@ tbody td{
 
 <script>
 
-console.log("Dashboard Loaded");
+console.log("DocAI Dashboard Loaded");
 
 </script>
 

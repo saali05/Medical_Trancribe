@@ -22,8 +22,12 @@ class Transcript(models.Model):
 
 
 class ClinicalDocument(models.Model):
-    transcript     = models.OneToOneField(Transcript, on_delete=models.CASCADE)
-    patient_name   = models.CharField(max_length=200, blank=True)
+    transcript      = models.OneToOneField(Transcript, on_delete=models.CASCADE)
+    patient_name    = models.CharField(max_length=200, blank=True)
+    patient_age     = models.CharField(max_length=10,  blank=True, default='')  # ← ADD
+    patient_gender  = models.CharField(max_length=20,  blank=True, default='')  # ← ADD
+    patient_contact = models.CharField(max_length=20,  blank=True, default='')  # ← ADD
+    # ... rest unchanged
     chief_complaint = models.TextField(blank=True)
     history        = models.TextField(blank=True)
     examination    = models.TextField(blank=True)
@@ -58,6 +62,10 @@ class Transcription(models.Model):
     follow_up            = models.TextField(blank=True, default='')
     vitals               = models.TextField(blank=True, default='')
     past_medical_history = models.TextField(blank=True, default='')
+    patient_name    = models.CharField(max_length=255, blank=True, default='')
+    patient_age     = models.CharField(max_length=10,  blank=True, default='')
+    patient_gender  = models.CharField(max_length=20,  blank=True, default='')
+    patient_contact = models.CharField(max_length=20,  blank=True, default='')
 
     def __str__(self):
         return f"Transcription #{self.id} — {self.patient_name or 'Unknown'} — {self.created_at:%Y-%m-%d %H:%M}"

@@ -1,5 +1,6 @@
 # transcription/views.py  —  COMPLETE FILE (replace your existing one)
 import traceback
+from urllib import request
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
@@ -87,6 +88,9 @@ def upload_audio(request):
             'patient_name',
             ''
         ).strip()
+        patient_age     = request.POST.get('patient_age', '').strip()
+        patient_gender  = request.POST.get('patient_gender', '').strip()
+        patient_contact = request.POST.get('patient_contact', '').strip()
 
         # NORMAL FILE UPLOAD
         audio_file = request.FILES.get(
@@ -156,10 +160,19 @@ def upload_audio(request):
             # 5. Clinical structuring
             sections = structure_clinical_document(processed_text, entities)
 
-            # 6. Save clinical document
+
+            # ADD these 3 lines to get the new fields
+            patient_age     = request.POST.get('patient_age', '').strip()
+            patient_gender  = request.POST.get('patient_gender', '').strip()
+            patient_contact = request.POST.get('patient_contact', '').strip()
+
+            # 6. Save clinical document — ADD the 3 fields here
             clinical_doc = ClinicalDocument.objects.create(
                 transcript=transcript,
                 patient_name=patient_name,
+                patient_age=patient_age,        # ← add
+                patient_gender=patient_gender,  # ← add
+                patient_contact=patient_contact,# ← add
                 **sections,
             )
 
@@ -217,15 +230,10 @@ def view_document(request, pk):
 @login_required
 # In views.py, update the call:
 def export_pdf(request, pk):
-    transcription = Transcription.objects.filter(pk=pk).first()
-    if transcription:
-        try:
-            from .exports import export_transcription_pdf
-            return export_transcription_pdf(transcription, request.user)  # ← add request.user
-        except Exception as e:
-            traceback.print_exc()
-            print("TRANSCRIPTION PDF ERROR:", e)
+    import traceback
+    from .exports import generate_pdf, export_transcription_pdf
 
+    # Try ClinicalDocument FIRST (main upload flow)
     try:
         doc = ClinicalDocument.objects.get(
             pk=pk,
@@ -235,15 +243,30 @@ def export_pdf(request, pk):
         patient  = (doc.patient_name or 'patient').replace(' ', '_').lower()
         date_str = doc.created_at.strftime('%Y%m%d')
         filename = f'clinical_{patient}_{date_str}_DOCAI{doc.pk:05d}.pdf'
-        from django.http import HttpResponse
         response = HttpResponse(pdf_bytes, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
+    except ClinicalDocument.DoesNotExist:
+        pass  # not a ClinicalDocument, try Transcription
     except Exception as e:
         traceback.print_exc()
         print("CLINICAL PDF ERROR:", e)
         messages.error(request, f'PDF export failed: {e}')
         return redirect('view_document', pk=pk)
+
+    # Fallback: Transcription model
+    transcription = Transcription.objects.filter(pk=pk).first()
+    if transcription:
+        try:
+            return export_transcription_pdf(transcription, request.user)
+        except Exception as e:
+            traceback.print_exc()
+            print("TRANSCRIPTION PDF ERROR:", e)
+            messages.error(request, f'PDF export failed: {e}')
+            return redirect('view_document', pk=pk)
+
+    messages.error(request, 'Record not found.')
+    return redirect('view_document', pk=pk)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -811,12 +834,43 @@ from medtranscribe.transcriber import process_audio
 
 def upload_audio(request):
     if request.method == 'POST':
+
+        # Check if recorded audio exists and inject it as a file
+        recorded_audio = request.POST.get('recorded_audio', '')
+        if recorded_audio and 'audio_file' not in request.FILES:
+            try:
+                import base64
+                from django.core.files.base import ContentFile
+                if ';base64,' in recorded_audio:
+                    header, encoded = recorded_audio.split(';base64,')
+                    ext = header.split('/')[-1]
+                else:
+                    encoded = recorded_audio
+                    ext = 'webm'
+                audio_bytes = base64.b64decode(encoded)
+                audio_file  = ContentFile(audio_bytes, name=f'recorded.{ext}')
+                request.FILES['audio_file'] = audio_file
+            except Exception as e:
+                messages.error(request, f'Recording error: {e}')
+                return render(request, 'transcription/upload.html', {'form': AudioUploadForm()})
+
         form = AudioUploadForm(request.POST, request.FILES)
+
+        # Manual validation — must have either uploaded or recorded file
+        if not request.FILES.get('audio_file'):
+            messages.error(request, 'Please upload an audio file or record live audio.')
+            return render(request, 'transcription/upload.html', {'form': form})
+
         if form.is_valid():
-            transcription = form.save()
+            transcription = form.save(commit=False)
+            transcription.patient_name    = request.POST.get('patient_name', '').strip()
+            transcription.patient_age     = request.POST.get('patient_age', '').strip()
+            transcription.patient_gender  = request.POST.get('patient_gender', '').strip()
+            transcription.patient_contact = request.POST.get('patient_contact', '').strip()
+            transcription.save()
+
             try:
                 result = process_audio(transcription.audio_file.path)
-
                 transcription.conversation_json    = result["conversation"]
                 med = result["medical_summary"]
                 transcription.chief_complaint      = med.get("chief_complaint", "")
@@ -833,8 +887,11 @@ def upload_audio(request):
                 return redirect('transcription_detail', pk=transcription.pk)
 
             except Exception as e:
+                import traceback
+                traceback.print_exc()
                 messages.error(request, f"Error: {str(e)}")
                 transcription.delete()
+
     else:
         form = AudioUploadForm()
 
